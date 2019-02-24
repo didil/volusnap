@@ -11,14 +11,9 @@ go:
 - 1.11.x
 
 addons:
-  postgresql: "11"
-  apt:
-    packages:
-    - postgresql-11
-    - postgresql-client-11
+  postgresql: "10"
 
 before_install:
-- sudo /etc/init.d/postgresql stop
 - make deps-ci
 
 before_script:
