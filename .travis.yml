@@ -11,7 +11,7 @@ go:
 - 1.11.x
 
 addons:
-  postgresql: "10"
+  postgresql: "9.6"
 
 before_install:
 - make deps-ci
