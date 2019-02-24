@@ -11,3 +11,6 @@ deps-ci: deps
 	go get golang.org/x/tools/cmd/cover
 test-ci:
 	go test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/...
+build:
+	go build cmd/volusnapd/volusnapd.go
+	go build cmd/volusnapctl/volusnapctl.go

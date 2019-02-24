@@ -12,3 +12,7 @@ coverage.txt
 # profiling
 *.test
 profile_cpu.pdf
+
+# binaries
+volusnapd
+volusnapctl
