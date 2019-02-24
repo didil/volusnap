@@ -1,0 +1,8 @@
+db:
+  host: localhost
+  port: 5432
+  name: volusnap_test
+  user: postgres
+  password:
+jwt:
+  secret: "123456SDFSDFDSDFS" 

@@ -1,0 +1,23 @@
+language: go
+
+sudo: false
+dist: trusty
+
+branches:
+  only:
+  - master
+
+go:
+- 1.11.x
+
+services:
+  - postgresql
+
+before_install:
+- make deps-ci
+
+before_script:
+  - psql -c 'create database volusnap_test;' -U postgres
+
+script:
+- make test-ci
