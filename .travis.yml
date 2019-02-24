@@ -10,8 +10,8 @@ branches:
 go:
 - 1.11.x
 
-services:
-  - postgresql
+addons:
+  postgresql: "11"
 
 before_install:
 - make deps-ci

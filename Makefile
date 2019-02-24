@@ -6,6 +6,7 @@ test-cover:
 	open cover.html
 deps:
 	go get -u ./...
+    go get -u github.com/stretchr/testify/assert
 deps-ci: deps
 	go get golang.org/x/tools/cmd/cover
 test-ci:
