@@ -16,8 +16,9 @@ addons:
     packages:
     - postgresql-11
     - postgresql-client-11
-    
+
 before_install:
+- sudo /etc/init.d/postgresql stop
 - make deps-ci
 
 before_script:
