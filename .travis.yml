@@ -16,9 +16,7 @@ addons:
     packages:
     - postgresql-11
     - postgresql-client-11
-env:
-  global:
-  - PGPORT=5433
+    
 before_install:
 - make deps-ci
 
