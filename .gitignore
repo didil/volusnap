@@ -1,0 +1,14 @@
+.idea
+.vscode
+
+config.yml
+config_test.yml
+
+# code coverage
+*.out
+cover.html
+coverage.txt
+
+# profiling
+*.test
+profile_cpu.pdf
