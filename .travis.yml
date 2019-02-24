@@ -18,6 +18,7 @@ before_install:
 
 before_script:
   - psql -c 'create database volusnap_test;' -U postgres
+  - cp config_ci.yml config_test.yml
 
 script:
 - make test-ci
