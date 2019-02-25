@@ -17,9 +17,9 @@ type mockAuthSvc struct {
 	mock.Mock
 }
 
-func (m *mockAuthSvc) Signup(email string, password string) (uint, error) {
+func (m *mockAuthSvc) Signup(email string, password string) (int, error) {
 	args := m.Called(email, password)
-	return uint(args.Int(0)), args.Error(1)
+	return args.Int(0), args.Error(1)
 }
 
 func (m *mockAuthSvc) Login(email string, password string) (string, error) {
@@ -83,7 +83,7 @@ func Test_handleSignupOk(t *testing.T) {
 	err = json.NewDecoder(resp.Body).Decode(&sResp)
 	assert.NoError(t, err)
 
-	assert.Equal(t, uint(1), sResp.ID)
+	assert.Equal(t, 1, sResp.ID)
 
 	authSvc.AssertExpectations(t)
 }

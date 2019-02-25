@@ -3,6 +3,8 @@ package api
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/didil/volusnap/pkg/models"
 )
 
 func newAccountController(accountSvc accountSvcer) *accountController {
@@ -14,11 +16,11 @@ type accountController struct {
 }
 
 type listAccountsResp struct {
-	Accounts []Account `json:"accounts,omitempty"`
+	Accounts models.AccountSlice `json:"accounts,omitempty"`
 }
 
 func (ctrl *accountController) handleListAccounts(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(ctxKey("userID")).(uint)
+	userID := r.Context().Value(ctxKey("userID")).(int)
 	accounts, err := ctrl.accountSvc.List(userID)
 	if err != nil {
 		jsonError(w, fmt.Sprintf("ListAccounts err: %v", err), http.StatusInternalServerError)

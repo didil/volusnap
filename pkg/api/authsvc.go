@@ -1,54 +1,46 @@
 package api
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
 
+	"github.com/didil/volusnap/pkg/models"
 	"github.com/spf13/viper"
+	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// User model
-type User struct {
-	ID        uint `gorm:"primary_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Email     string `gorm:"type:varchar(100);unique_index"`
-	Password  string
-}
-
 type authSvcer interface {
-	Signup(email string, password string) (uint, error)
+	Signup(email string, password string) (int, error)
 	Login(email string, password string) (string, error)
 }
 
-func newAuthService(db *gorm.DB) *authService {
+func newAuthService(db *sql.DB) *authService {
 	return &authService{db}
 }
 
 type authService struct {
-	db *gorm.DB
+	db *sql.DB
 }
 
 // Signup user
-func (svc *authService) Signup(email string, password string) (uint, error) {
-	var users []User
-
-	err := svc.db.Where("email = ?", email).Find(&users).Error
+func (svc *authService) Signup(email string, password string) (int, error) {
+	count, err := models.Users(qm.Where("email = ?", email)).Count(svc.db)
 	if err != nil {
 		return 0, err
 	}
-	if len(users) > 0 {
+	if count > 0 {
 		return 0, fmt.Errorf("a user already exists for the email: %v", email)
 	}
 
 	hashedP := hashAndSalt([]byte(password))
-	user := User{Email: email, Password: hashedP}
-	err = svc.db.Create(&user).Error
+	user := models.User{Email: email, Password: hashedP}
+	err = user.Insert(svc.db, boil.Infer())
 	if err != nil {
 		return 0, err
 	}
@@ -72,9 +64,7 @@ func comparePasswords(hashedPwd []byte, plainPwd []byte) error {
 
 // Login user
 func (svc *authService) Login(email string, password string) (string, error) {
-	var users []User
-
-	err := svc.db.Where("email = ?", email).Find(&users).Error
+	users, err := models.Users(models.UserWhere.Email.EQ(email)).All(svc.db)
 	if err != nil {
 		return "", err
 	}
@@ -94,7 +84,7 @@ func (svc *authService) Login(email string, password string) (string, error) {
 }
 
 type customClaims struct {
-	UserID uint `json:"user"`
+	UserID int `json:"user"`
 	jwt.StandardClaims
 }
 
@@ -107,7 +97,7 @@ func getJWTSecret() ([]byte, error) {
 	return secret, nil
 }
 
-func signJWT(userID uint) (string, error) {
+func signJWT(userID int) (string, error) {
 	secret, err := getJWTSecret()
 
 	claims := customClaims{
@@ -123,7 +113,7 @@ func signJWT(userID uint) (string, error) {
 	return tokenStr, err
 }
 
-func parseJWT(tokenStr string) (uint, error) {
+func parseJWT(tokenStr string) (int, error) {
 	secret, err := getJWTSecret()
 
 	token, err := jwt.ParseWithClaims(tokenStr, &customClaims{}, func(token *jwt.Token) (interface{}, error) {

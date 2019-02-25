@@ -1,0 +1,4 @@
+test:
+    dialect: postgres
+    datasource: dbname=volusnap_test user=postgres password= sslmode=disable
+    table: migrations

@@ -45,11 +45,6 @@ func StartServer(port int) error {
 	}
 	defer db.Close()
 
-	err = autoMigrate(db)
-	if err != nil {
-		return err
-	}
-
 	aSvc := newAuthService(db)
 	authCtrl := newAuthController(aSvc)
 

@@ -20,7 +20,7 @@ type signupReq struct {
 }
 
 type signupResp struct {
-	ID uint `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
 }
 
 func (ctrl *authController) handleSignup(w http.ResponseWriter, r *http.Request) {

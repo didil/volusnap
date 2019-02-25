@@ -1,29 +1,26 @@
 package api
 
 import (
+	"database/sql"
 	"testing"
 
-	"github.com/jinzhu/gorm"
+	"github.com/didil/volusnap/pkg/models"
 	"github.com/stretchr/testify/suite"
+	"github.com/volatiletech/sqlboiler/boil"
 )
 
 type AuthTestSuite struct {
 	suite.Suite
-	db *gorm.DB
+	db *sql.DB
 }
 
-func bootstrapTests() *gorm.DB {
+func bootstrapTests() *sql.DB {
 	err := loadConfig("../../config_test")
 	if err != nil {
 		panic(err)
 	}
 
 	db, err := openDB()
-	if err != nil {
-		panic(err)
-	}
-
-	err = autoMigrate(db)
 	if err != nil {
 		panic(err)
 	}
@@ -39,13 +36,14 @@ func (suite *AuthTestSuite) SetupSuite() {
 func (suite *AuthTestSuite) Test_authService_SignupExisting() {
 	db := suite.db
 	defer func() {
-		db.Delete(&User{})
+		models.Users().DeleteAll(db)
 	}()
 
 	email := "example@example.com"
 	password := "123456"
 
-	err := db.Create(&User{Email: email}).Error
+	user := models.User{Email: email}
+	err := user.Insert(db, boil.Infer())
 	suite.NoError(err)
 
 	authSvc := newAuthService(db)
@@ -56,7 +54,7 @@ func (suite *AuthTestSuite) Test_authService_SignupExisting() {
 func (suite *AuthTestSuite) Test_authService_SignupOK() {
 	db := suite.db
 	defer func() {
-		db.Delete(&User{})
+		models.Users().DeleteAll(db)
 	}()
 
 	email := "example@example.com"
@@ -66,8 +64,7 @@ func (suite *AuthTestSuite) Test_authService_SignupOK() {
 	id, err := authSvc.Signup(email, password)
 	suite.NoError(err)
 
-	user := User{}
-	err = db.First(&user, id).Error
+	user, err := models.FindUser(db, id)
 	suite.NoError(err)
 
 	suite.Equal(email, user.Email)
@@ -82,7 +79,7 @@ func TestAuthTestSuite(t *testing.T) {
 func (suite *AuthTestSuite) Test_authService_LoginNonExisting() {
 	db := suite.db
 	defer func() {
-		db.Delete(&User{})
+		models.Users().DeleteAll(db)
 	}()
 
 	email := "example@example.com"
@@ -96,7 +93,7 @@ func (suite *AuthTestSuite) Test_authService_LoginNonExisting() {
 func (suite *AuthTestSuite) Test_authService_LoginInvalid() {
 	db := suite.db
 	defer func() {
-		db.Delete(&User{})
+		models.Users().DeleteAll(db)
 	}()
 
 	email := "example@example.com"
@@ -114,7 +111,7 @@ func (suite *AuthTestSuite) Test_authService_LoginInvalid() {
 func (suite *AuthTestSuite) Test_authService_LoginOK() {
 	db := suite.db
 	defer func() {
-		db.Delete(&User{})
+		models.Users().DeleteAll(db)
 	}()
 
 	email := "example@example.com"

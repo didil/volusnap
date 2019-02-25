@@ -3,6 +3,8 @@
 
 config.yml
 config_test.yml
+sqlboiler.toml
+sql-migrate.yml
 
 # code coverage
 *.out
