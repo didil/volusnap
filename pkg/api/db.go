@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jinzhu/gorm"
-	// 
+	//
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/viper"
 )
@@ -20,7 +20,7 @@ func openDB() (*gorm.DB, error) {
 }
 
 func autoMigrate(db *gorm.DB) error {
-	err := db.AutoMigrate(&User{}).Error
+	err := db.AutoMigrate(&User{}, &Account{}).Error
 
 	return err
 }
