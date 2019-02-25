@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -19,6 +20,16 @@ type mockAccountSvc struct {
 func (m *mockAccountSvc) List(userID int) (models.AccountSlice, error) {
 	args := m.Called(userID)
 	return args.Get(0).(models.AccountSlice), args.Error(1)
+}
+
+func (m *mockAccountSvc) Create(userID int, provider string, name string, token string) (int, error) {
+	args := m.Called(userID, provider, name, token)
+	return args.Int(0), args.Error(1)
+}
+
+func (m *mockAccountSvc) Get(userID, accountID int) (*models.Account, error) {
+	args := m.Called(userID, accountID)
+	return args.Get(0).(*models.Account), args.Error(1)
 }
 
 func Test_handleListAccountsAuthErr(t *testing.T) {
@@ -71,13 +82,49 @@ func Test_handleListAccountsOK(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
-
 	var lAResp listAccountsResp
 	err = json.NewDecoder(resp.Body).Decode(&lAResp)
 	assert.NoError(t, err)
 
 	assert.ElementsMatch(t, lAResp.Accounts, accounts)
+
+	accountSvc.AssertExpectations(t)
+}
+
+func Test_handleCreateAccountOK(t *testing.T) {
+	userID := 5
+	token, err := signJWT(userID)
+	assert.NoError(t, err)
+
+	accountSvc := new(mockAccountSvc)
+	accountCtrl := newAccountController(accountSvc)
+
+	accountID := 105
+
+	accountSvc.On("Create", userID, "my-provider", "account-name", "my-token").Return(accountID, nil)
+
+	r := buildRouter(&appController{accountCtrl: accountCtrl})
+	s := httptest.NewServer(r)
+	defer s.Close()
+
+	var b bytes.Buffer
+	json.NewEncoder(&b).Encode(&createAccountReq{Provider: "my-provider", Name: "account-name", Token: "my-token"})
+
+	req, err := http.NewRequest(http.MethodPost, s.URL+"/api/v1/account/", &b)
+	assert.NoError(t, err)
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := http.DefaultClient.Do(req)
+	assert.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
+
+	var cAResp createAccountResp
+	err = json.NewDecoder(resp.Body).Decode(&cAResp)
+	assert.NoError(t, err)
+
+	assert.Equal(t, cAResp.ID, accountID)
 
 	accountSvc.AssertExpectations(t)
 }

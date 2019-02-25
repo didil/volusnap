@@ -28,6 +28,7 @@ type Account struct {
 	UpdatedAt null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
 	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	Provider  string    `boil:"provider" json:"provider" toml:"provider" yaml:"provider"`
+	Token     string    `boil:"token" json:"token" toml:"token" yaml:"token"`
 	UserID    int       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 
 	R *accountR `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -40,6 +41,7 @@ var AccountColumns = struct {
 	UpdatedAt string
 	Name      string
 	Provider  string
+	Token     string
 	UserID    string
 }{
 	ID:        "id",
@@ -47,6 +49,7 @@ var AccountColumns = struct {
 	UpdatedAt: "updated_at",
 	Name:      "name",
 	Provider:  "provider",
+	Token:     "token",
 	UserID:    "user_id",
 }
 
@@ -99,6 +102,7 @@ var AccountWhere = struct {
 	UpdatedAt whereHelpernull_Time
 	Name      whereHelperstring
 	Provider  whereHelperstring
+	Token     whereHelperstring
 	UserID    whereHelperint
 }{
 	ID:        whereHelperint{field: `id`},
@@ -106,6 +110,7 @@ var AccountWhere = struct {
 	UpdatedAt: whereHelpernull_Time{field: `updated_at`},
 	Name:      whereHelperstring{field: `name`},
 	Provider:  whereHelperstring{field: `provider`},
+	Token:     whereHelperstring{field: `token`},
 	UserID:    whereHelperint{field: `user_id`},
 }
 
@@ -130,8 +135,8 @@ func (*accountR) NewStruct() *accountR {
 type accountL struct{}
 
 var (
-	accountColumns               = []string{"id", "created_at", "updated_at", "name", "provider", "user_id"}
-	accountColumnsWithoutDefault = []string{"created_at", "updated_at", "name", "provider", "user_id"}
+	accountColumns               = []string{"id", "created_at", "updated_at", "name", "provider", "token", "user_id"}
+	accountColumnsWithoutDefault = []string{"created_at", "updated_at", "name", "provider", "token", "user_id"}
 	accountColumnsWithDefault    = []string{"id"}
 	accountPrimaryKeyColumns     = []string{"id"}
 )

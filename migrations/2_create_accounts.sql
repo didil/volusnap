@@ -5,6 +5,7 @@ CREATE TABLE accounts (
     updated_at timestamp with time zone,
     name      varchar(255) NOT NULL,
     provider      varchar(30) NOT NULL,
+    token      varchar(255) NOT NULL,
     user_id   integer  NOT NULL
 );
 
