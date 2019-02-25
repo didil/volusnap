@@ -51,11 +51,17 @@ func (do *digitalOceanService) ListVolumes() ([]Volume, error) {
 		return nil, fmt.Errorf("DO list droplets %v : %v", resp.Status, string(body))
 	}
 
-	type dOVolumesResp struct {
-		Droplets []map[string]interface{} `json:"droplets,omitempty"`
+	type droplet struct {
+		ID   float64 `json:"id,omitempty"`
+		Name string  `json:"name,omitempty"`
+		Disk float64 `json:"disk,omitempty"`
 	}
 
-	var b dOVolumesResp
+	type dropletsList struct {
+		Droplets []droplet `json:"droplets,omitempty"`
+	}
+
+	var b dropletsList
 
 	err = json.NewDecoder(resp.Body).Decode(&b)
 	if err != nil {
@@ -67,9 +73,9 @@ func (do *digitalOceanService) ListVolumes() ([]Volume, error) {
 	droplets := b.Droplets
 	for _, d := range droplets {
 		volumes = append(volumes, Volume{
-			ID:   strconv.Itoa(int(d["id"].(float64))),
-			Name: d["name"].(string),
-			Size: d["disk"].(float64),
+			ID:   strconv.Itoa(int(d.ID)),
+			Name: d.Name,
+			Size: d.Disk,
 		})
 	}
 
