@@ -34,13 +34,12 @@ func (ctrl *volumeController) handleListVolumes(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	factory := pRegistry.getProviderServiceFactory(account.Provider)
-	if factory == nil {
-		jsonError(w, fmt.Sprintf("could not get provider factory for %v", account.Provider), http.StatusInternalServerError)
+	providerSvc, err := getProviderService(account)
+	if err != nil {
+		jsonError(w, fmt.Sprintf("could not get provider service: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	providerSvc := factory.Build(account.Token)
 	volumes, err := providerSvc.ListVolumes()
 	if err != nil {
 		jsonError(w, fmt.Sprintf("could not list volumes: %v", err), http.StatusInternalServerError)
