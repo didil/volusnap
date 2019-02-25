@@ -29,12 +29,16 @@ func (reg *providerRegistry) register(provider string, factory providerServiceFa
 
 // check if provider valid
 func (reg *providerRegistry) isValidProvider(provider string) bool {
+	reg.mutex.Lock()
+	defer reg.mutex.Unlock()
 	_, ok := reg.factories[provider]
 	return ok
 }
 
 // get provider service factory
 func (reg *providerRegistry) getProviderServiceFactory(provider string) providerServiceFactory {
+	reg.mutex.Lock()
+	defer reg.mutex.Unlock()
 	factory, ok := reg.factories[provider]
 	if !ok {
 		return nil
