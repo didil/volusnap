@@ -11,7 +11,8 @@ import (
 )
 
 type appController struct {
-	authCtrl *authController
+	authCtrl    *authController
+	accountCtrl *accountController
 }
 
 func buildRouter(app *appController) http.Handler {
@@ -19,10 +20,14 @@ func buildRouter(app *appController) http.Handler {
 	r.Use(loggingMiddleware)
 	r.Handle("/", http.NotFoundHandler())
 
-	s := r.PathPrefix("/api/v1").Subrouter()
+	apiR := r.PathPrefix("/api/v1").Subrouter()
+	apiR.HandleFunc("/auth/signup", app.authCtrl.handleSignup).Methods(http.MethodPost)
+	apiR.HandleFunc("/auth/login", app.authCtrl.handleLogin).Methods(http.MethodPost)
 
-	s.HandleFunc("/auth/signup", app.authCtrl.handleSignup).Methods(http.MethodPost)
-	s.HandleFunc("/auth/login", app.authCtrl.handleLogin).Methods(http.MethodPost)
+	accountR := apiR.PathPrefix("/account").Subrouter()
+	accountR.Use(authMiddleware)
+
+	accountR.HandleFunc("/", app.accountCtrl.handleListAccounts).Methods(http.MethodGet)
 
 	return r
 }
@@ -59,9 +64,19 @@ type jsonErr struct {
 }
 
 func jsonError(w http.ResponseWriter, errStr string, code int) {
+	w.Header().Set("Content-Type", "application/JSON")
 	w.WriteHeader(code)
 	e := json.NewEncoder(w).Encode(&jsonErr{Err: errStr})
 	if e != nil {
 		http.Error(w, fmt.Sprintf("json encoding error: %v", e), http.StatusInternalServerError)
+	}
+}
+
+func jsonOK(w http.ResponseWriter, v interface{}) {
+	w.Header().Set("Content-Type", "application/JSON")
+	err := json.NewEncoder(w).Encode(v)
+	if err != nil {
+		jsonError(w, fmt.Sprintf("jsonOK err: %v", err), http.StatusInternalServerError)
+		return
 	}
 }

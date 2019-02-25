@@ -80,22 +80,29 @@ func (svc *authService) Login(email string, password string) (string, error) {
 		return "", fmt.Errorf("password invalid")
 	}
 
-	token, err := signJWT(user.ID, []byte(viper.GetString("jwt.secret")))
+	token, err := signJWT(user.ID)
 	return token, err
 }
 
 type customClaims struct {
-	User uint `json:"user"`
+	UserID uint `json:"user"`
 	jwt.StandardClaims
 }
 
-func signJWT(userID uint, secret []byte) (string, error) {
+func getJWTSecret() ([]byte, error) {
+	secret := []byte(viper.GetString("jwt.secret"))
 	if len(secret) == 0 {
-		return "", fmt.Errorf("JWT signing Secret is empty")
+		return nil, fmt.Errorf("JWT signing Secret is empty")
 	}
 
+	return secret, nil
+}
+
+func signJWT(userID uint) (string, error) {
+	secret, err := getJWTSecret()
+
 	claims := customClaims{
-		User: userID,
+		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(365 * 24 * time.Hour).Unix(),
 			Issuer:    "app",
@@ -107,7 +114,9 @@ func signJWT(userID uint, secret []byte) (string, error) {
 	return tokenStr, err
 }
 
-func parseJWT(tokenStr string, secret []byte) (uint, error) {
+func parseJWT(tokenStr string) (uint, error) {
+	secret, err := getJWTSecret()
+
 	token, err := jwt.ParseWithClaims(tokenStr, &customClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -125,5 +134,5 @@ func parseJWT(tokenStr string, secret []byte) (uint, error) {
 		return 0, fmt.Errorf("jwt token invalid")
 	}
 
-	return claims.User, nil
+	return claims.UserID, nil
 }

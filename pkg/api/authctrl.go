@@ -38,11 +38,7 @@ func (ctrl *authController) handleSignup(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(&signupResp{ID: id})
-	if err != nil {
-		jsonError(w, fmt.Sprintf("signup resp json err: %v", err), http.StatusInternalServerError)
-		return
-	}
+	jsonOK(w, &signupResp{ID: id})
 }
 
 type loginReq struct {
@@ -69,9 +65,5 @@ func (ctrl *authController) handleLogin(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err = json.NewEncoder(w).Encode(&loginResp{Token: token})
-	if err != nil {
-		jsonError(w, fmt.Sprintf("login resp json err: %v", err), http.StatusInternalServerError)
-		return
-	}
+	jsonOK(w, &loginResp{Token: token})
 }

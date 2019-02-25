@@ -46,7 +46,7 @@ func Test_handleSignupWithErr(t *testing.T) {
 	resp, err := http.Post(s.URL+"/api/v1/auth/signup", "application/JSON", &b)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
-	assert.Equal(t, resp.StatusCode, 500)
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	var jErr jsonErr
 	err = json.NewDecoder(resp.Body).Decode(&jErr)
@@ -76,7 +76,8 @@ func Test_handleSignupOk(t *testing.T) {
 	resp, err := http.Post(s.URL+"/api/v1/auth/signup", "application/JSON", &b)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
-	assert.Equal(t, resp.StatusCode, 200)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
 	var sResp signupResp
 	err = json.NewDecoder(resp.Body).Decode(&sResp)
@@ -106,7 +107,7 @@ func Test_handleLoginWithErr(t *testing.T) {
 	resp, err := http.Post(s.URL+"/api/v1/auth/login", "application/JSON", &b)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
-	assert.Equal(t, resp.StatusCode, 500)
+	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
 	var jErr jsonErr
 	err = json.NewDecoder(resp.Body).Decode(&jErr)
@@ -136,7 +137,8 @@ func Test_handleLoginOk(t *testing.T) {
 	resp, err := http.Post(s.URL+"/api/v1/auth/login", "application/JSON", &b)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
-	assert.Equal(t, resp.StatusCode, 200)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
 	var lResp loginResp
 	err = json.NewDecoder(resp.Body).Decode(&lResp)

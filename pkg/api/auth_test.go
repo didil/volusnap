@@ -3,8 +3,6 @@ package api
 import (
 	"testing"
 
-	"github.com/spf13/viper"
-
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/suite"
 )
@@ -130,7 +128,7 @@ func (suite *AuthTestSuite) Test_authService_LoginOK() {
 	token, err := authSvc.Login(email, password)
 	suite.NoError(err)
 
-	userID, err := parseJWT(token, []byte(viper.GetString("jwt.secret")))
+	userID, err := parseJWT(token)
 	suite.NoError(err)
 
 	suite.Equal(id, userID)
