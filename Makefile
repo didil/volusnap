@@ -8,10 +8,10 @@ deps:
 	go get -u ./...
 	go get -u github.com/stretchr/testify/assert
 	go get -u -t github.com/volatiletech/sqlboiler
-	go get -u github.com/volatiletech/null
 	go get -u github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql
 deps-ci: deps
 	go get golang.org/x/tools/cmd/cover
+	go get -v github.com/rubenv/sql-migrate/...
 test-ci:
 	go test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/...
 build:
