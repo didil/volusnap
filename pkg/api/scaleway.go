@@ -55,7 +55,7 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode != http.StatusOK {
+		if resp.StatusCode >= 400 {
 			body, _ := ioutil.ReadAll(resp.Body)
 			return nil, fmt.Errorf("Scaleway list volumes %v : %v", resp.Status, string(body))
 		}
