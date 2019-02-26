@@ -23,54 +23,59 @@ import (
 
 // SnapRule is an object representing the database table.
 type SnapRule struct {
-	ID         int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt  null.Time `boil:"created_at" json:"created_at,omitempty" toml:"created_at" yaml:"created_at,omitempty"`
-	UpdatedAt  null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
-	Frequency  int       `boil:"frequency" json:"frequency" toml:"frequency" yaml:"frequency"`
-	VolumeID   string    `boil:"volume_id" json:"volume_id" toml:"volume_id" yaml:"volume_id"`
-	VolumeName string    `boil:"volume_name" json:"volume_name" toml:"volume_name" yaml:"volume_name"`
-	AccountID  int       `boil:"account_id" json:"account_id" toml:"account_id" yaml:"account_id"`
+	ID           int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt    null.Time `boil:"created_at" json:"created_at,omitempty" toml:"created_at" yaml:"created_at,omitempty"`
+	UpdatedAt    null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
+	Frequency    int       `boil:"frequency" json:"frequency" toml:"frequency" yaml:"frequency"`
+	VolumeID     string    `boil:"volume_id" json:"volume_id" toml:"volume_id" yaml:"volume_id"`
+	VolumeName   string    `boil:"volume_name" json:"volume_name" toml:"volume_name" yaml:"volume_name"`
+	VolumeRegion string    `boil:"volume_region" json:"volume_region" toml:"volume_region" yaml:"volume_region"`
+	AccountID    int       `boil:"account_id" json:"account_id" toml:"account_id" yaml:"account_id"`
 
 	R *snapRuleR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L snapRuleL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var SnapRuleColumns = struct {
-	ID         string
-	CreatedAt  string
-	UpdatedAt  string
-	Frequency  string
-	VolumeID   string
-	VolumeName string
-	AccountID  string
+	ID           string
+	CreatedAt    string
+	UpdatedAt    string
+	Frequency    string
+	VolumeID     string
+	VolumeName   string
+	VolumeRegion string
+	AccountID    string
 }{
-	ID:         "id",
-	CreatedAt:  "created_at",
-	UpdatedAt:  "updated_at",
-	Frequency:  "frequency",
-	VolumeID:   "volume_id",
-	VolumeName: "volume_name",
-	AccountID:  "account_id",
+	ID:           "id",
+	CreatedAt:    "created_at",
+	UpdatedAt:    "updated_at",
+	Frequency:    "frequency",
+	VolumeID:     "volume_id",
+	VolumeName:   "volume_name",
+	VolumeRegion: "volume_region",
+	AccountID:    "account_id",
 }
 
 // Generated where
 
 var SnapRuleWhere = struct {
-	ID         whereHelperint
-	CreatedAt  whereHelpernull_Time
-	UpdatedAt  whereHelpernull_Time
-	Frequency  whereHelperint
-	VolumeID   whereHelperstring
-	VolumeName whereHelperstring
-	AccountID  whereHelperint
+	ID           whereHelperint
+	CreatedAt    whereHelpernull_Time
+	UpdatedAt    whereHelpernull_Time
+	Frequency    whereHelperint
+	VolumeID     whereHelperstring
+	VolumeName   whereHelperstring
+	VolumeRegion whereHelperstring
+	AccountID    whereHelperint
 }{
-	ID:         whereHelperint{field: `id`},
-	CreatedAt:  whereHelpernull_Time{field: `created_at`},
-	UpdatedAt:  whereHelpernull_Time{field: `updated_at`},
-	Frequency:  whereHelperint{field: `frequency`},
-	VolumeID:   whereHelperstring{field: `volume_id`},
-	VolumeName: whereHelperstring{field: `volume_name`},
-	AccountID:  whereHelperint{field: `account_id`},
+	ID:           whereHelperint{field: `id`},
+	CreatedAt:    whereHelpernull_Time{field: `created_at`},
+	UpdatedAt:    whereHelpernull_Time{field: `updated_at`},
+	Frequency:    whereHelperint{field: `frequency`},
+	VolumeID:     whereHelperstring{field: `volume_id`},
+	VolumeName:   whereHelperstring{field: `volume_name`},
+	VolumeRegion: whereHelperstring{field: `volume_region`},
+	AccountID:    whereHelperint{field: `account_id`},
 }
 
 // SnapRuleRels is where relationship names are stored.
@@ -94,8 +99,8 @@ func (*snapRuleR) NewStruct() *snapRuleR {
 type snapRuleL struct{}
 
 var (
-	snapRuleColumns               = []string{"id", "created_at", "updated_at", "frequency", "volume_id", "volume_name", "account_id"}
-	snapRuleColumnsWithoutDefault = []string{"created_at", "updated_at", "frequency", "volume_id", "volume_name", "account_id"}
+	snapRuleColumns               = []string{"id", "created_at", "updated_at", "frequency", "volume_id", "volume_name", "volume_region", "account_id"}
+	snapRuleColumnsWithoutDefault = []string{"created_at", "updated_at", "frequency", "volume_id", "volume_name", "volume_region", "account_id"}
 	snapRuleColumnsWithDefault    = []string{"id"}
 	snapRulePrimaryKeyColumns     = []string{"id"}
 )

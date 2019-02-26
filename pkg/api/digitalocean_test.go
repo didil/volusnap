@@ -14,8 +14,8 @@ func Test_digitalOceanService_ListVolumes(t *testing.T) {
 	doSvc := factory.Build(token).(*digitalOceanService)
 
 	volumes := []Volume{
-		Volume{ID: "3164444", Name: "example.com", Size: 25},
-		Volume{ID: "95874511", Name: "my-other-droplet", Size: 50},
+		Volume{ID: "3164444", Name: "example.com", Size: 25, Region: "nyc3"},
+		Volume{ID: "95874511", Name: "my-other-droplet", Size: 50, Region: "nyc1"},
 	}
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +34,22 @@ func Test_digitalOceanService_ListVolumes(t *testing.T) {
 				"status": "active",
 				"volume_ids": [				],
 				"size": {				},
-				"size_slug": "s-1vcpu-1gb"
+				"size_slug": "s-1vcpu-1gb",
+				"region": {
+					"name": "New York 3",
+					"slug": "nyc3",
+					"sizes": [
+			
+					],
+					"features": [
+					  "virtio",
+					  "private_networking",
+					  "backups",
+					  "ipv6",
+					  "metadata"
+					],
+					"available": null
+				  }
 			  },
 			  {
 				"id": 95874511,
@@ -46,7 +61,22 @@ func Test_digitalOceanService_ListVolumes(t *testing.T) {
 				"status": "active",
 				"volume_ids": [				],
 				"size": {				},
-				"size_slug": "s-1vcpu-1gb"
+				"size_slug": "s-1vcpu-1gb",
+				"region": {
+					"name": "New York 1",
+					"slug": "nyc1",
+					"sizes": [
+			
+					],
+					"features": [
+					  "virtio",
+					  "private_networking",
+					  "backups",
+					  "ipv6",
+					  "metadata"
+					],
+					"available": null
+				  }
 			  }
 			]
 		  }`))

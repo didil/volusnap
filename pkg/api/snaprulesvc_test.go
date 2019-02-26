@@ -70,7 +70,7 @@ func (suite *SnapRuleTestSuite) Test_snapRuleService_CreateOk() {
 	suite.NoError(err)
 
 	snapRuleSvc := newSnapRuleService(db)
-	snapRuleID, err := snapRuleSvc.Create(acc.ID, 12, "vol-123", "my volume")
+	snapRuleID, err := snapRuleSvc.Create(acc.ID, 12, "vol-123", "my volume", "nyc1")
 	suite.NoError(err)
 
 	snapRule, err := models.FindSnapRule(db, snapRuleID)
@@ -80,4 +80,5 @@ func (suite *SnapRuleTestSuite) Test_snapRuleService_CreateOk() {
 	suite.Equal(12, snapRule.Frequency)
 	suite.Equal("vol-123", snapRule.VolumeID)
 	suite.Equal("my volume", snapRule.VolumeName)
+	suite.Equal("nyc1", snapRule.VolumeRegion)
 }

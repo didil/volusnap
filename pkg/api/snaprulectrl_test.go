@@ -23,8 +23,8 @@ func (m *mockSnapRuleSvc) List(accountID int) (models.SnapRuleSlice, error) {
 	return args.Get(0).(models.SnapRuleSlice), args.Error(1)
 }
 
-func (m *mockSnapRuleSvc) Create(accountID int, frequency int, volumeID string, volumeName string) (int, error) {
-	args := m.Called(accountID, frequency, volumeID, volumeName)
+func (m *mockSnapRuleSvc) Create(accountID int, frequency int, volumeID string, volumeName string, volumeRegion string) (int, error) {
+	args := m.Called(accountID, frequency, volumeID, volumeName, volumeRegion)
 	return args.Int(0), args.Error(1)
 }
 func Test_handleListSnapRulesOK(t *testing.T) {
@@ -89,15 +89,16 @@ func Test_handleCreateSnapRuleOK(t *testing.T) {
 	frequency := 24
 	volumeID := "vol-15"
 	volumeName := "my-volu"
+	volumeRegion := "lon1"
 
-	snapRuleSvc.On("Create", accountID, frequency, volumeID, volumeName).Return(snapRuleID, nil)
+	snapRuleSvc.On("Create", accountID, frequency, volumeID, volumeName, volumeRegion).Return(snapRuleID, nil)
 
 	r := buildRouter(&appController{snapRuleCtrl: snapRuleCtrl})
 	s := httptest.NewServer(r)
 	defer s.Close()
 
 	var b bytes.Buffer
-	json.NewEncoder(&b).Encode(&createSnapRuleReq{Frequency: frequency, VolumeID: volumeID, VolumeName: volumeName})
+	json.NewEncoder(&b).Encode(&createSnapRuleReq{Frequency: frequency, VolumeID: volumeID, VolumeName: volumeName, VolumeRegion: volumeRegion})
 
 	req, err := http.NewRequest(http.MethodPost, s.URL+fmt.Sprintf("/api/v1/account/%v/snaprule/", accountID), &b)
 	assert.NoError(t, err)

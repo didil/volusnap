@@ -51,10 +51,15 @@ func (do *digitalOceanService) ListVolumes() ([]Volume, error) {
 		return nil, fmt.Errorf("DO list droplets %v : %v", resp.Status, string(body))
 	}
 
+	type dropletRegion struct {
+		Slug string `json:"slug,omitempty"`
+	}
+
 	type droplet struct {
-		ID   float64 `json:"id,omitempty"`
-		Name string  `json:"name,omitempty"`
-		Disk float64 `json:"disk,omitempty"`
+		ID     float64       `json:"id,omitempty"`
+		Name   string        `json:"name,omitempty"`
+		Disk   float64       `json:"disk,omitempty"`
+		Region dropletRegion `json:"region,omitempty"`
 	}
 
 	type dropletsList struct {
@@ -73,9 +78,10 @@ func (do *digitalOceanService) ListVolumes() ([]Volume, error) {
 	droplets := b.Droplets
 	for _, d := range droplets {
 		volumes = append(volumes, Volume{
-			ID:   strconv.Itoa(int(d.ID)),
-			Name: d.Name,
-			Size: d.Disk,
+			ID:     strconv.Itoa(int(d.ID)),
+			Name:   d.Name,
+			Size:   d.Disk,
+			Region: d.Region.Slug,
 		})
 	}
 

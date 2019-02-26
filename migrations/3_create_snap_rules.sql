@@ -6,6 +6,7 @@ CREATE TABLE snap_rules (
     frequency      integer NOT NULL,
     volume_id      varchar(255) NOT NULL,
     volume_name    varchar(255) NOT NULL,
+    volume_region  varchar(50) NOT NULL,
     account_id     integer NOT NULL
 );
 

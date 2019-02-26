@@ -52,9 +52,10 @@ func (ctrl *snapRuleController) handleListSnapRules(w http.ResponseWriter, r *ht
 }
 
 type createSnapRuleReq struct {
-	Frequency  int    `json:"frequency,omitempty"`
-	VolumeID   string `json:"volume_id,omitempty"`
-	VolumeName string `json:"volume_name,omitempty"`
+	Frequency    int    `json:"frequency,omitempty"`
+	VolumeID     string `json:"volume_id,omitempty"`
+	VolumeName   string `json:"volume_name,omitempty"`
+	VolumeRegion string `json:"volume_region,omitempty"`
 }
 
 type createSnapRuleResp struct {
@@ -84,7 +85,7 @@ func (ctrl *snapRuleController) handleCreateSnapRule(w http.ResponseWriter, r *h
 		return
 	}
 
-	snapRuleID, err := ctrl.snapRuleSvc.Create(account.ID, create.Frequency, create.VolumeID, create.VolumeName)
+	snapRuleID, err := ctrl.snapRuleSvc.Create(account.ID, create.Frequency, create.VolumeID, create.VolumeName,create.VolumeRegion)
 	if err != nil {
 		jsonError(w, fmt.Sprintf("CreateAccount err: %v", err), http.StatusInternalServerError)
 		return
