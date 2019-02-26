@@ -14,8 +14,8 @@ type mockSnapshotTaker struct {
 	mock.Mock
 }
 
-func (m *mockSnapshotTaker) Take(account *models.Account, volumeID string) (string, error) {
-	args := m.Called(account, volumeID)
+func (m *mockSnapshotTaker) Take(account *models.Account, snapRule *models.SnapRule) (string, error) {
+	args := m.Called(account, snapRule)
 	return args.String(0), args.Error(1)
 }
 
@@ -43,7 +43,7 @@ func Test_snapRulesChecker_checkAll(t *testing.T) {
 
 	accountSvc.On("Get", account.ID).Return(account, nil)
 
-	shooter.On("Take", account, snapRules[1].VolumeID).Return(providerSnapshotID, nil)
+	shooter.On("Take", account, snapRules[1]).Return(providerSnapshotID, nil)
 
 	checker := newSnapRulesChecker(snapRuleSvc, snapshotSvc, accountSvc, shooter)
 

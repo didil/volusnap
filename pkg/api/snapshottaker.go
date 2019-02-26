@@ -7,7 +7,7 @@ import (
 )
 
 type snapshooter interface {
-	Take(account *models.Account, volumeID string) (string, error)
+	Take(account *models.Account, snapRule *models.SnapRule) (string, error)
 }
 
 func newSnapshotTaker() snapshooter {
@@ -17,12 +17,12 @@ func newSnapshotTaker() snapshooter {
 type snapshotTaker struct {
 }
 
-func (shooter *snapshotTaker) Take(account *models.Account, volumeID string) (string, error) {
+func (shooter *snapshotTaker) Take(account *models.Account, snapRule *models.SnapRule) (string, error) {
 	providerSvc, err := getProviderService(account)
 	if err != nil {
 		return "", fmt.Errorf("could not get provider service: %v", err)
 	}
 
-	providerSnapshotID, err := providerSvc.TakeSnapshot(volumeID)
+	providerSnapshotID, err := providerSvc.TakeSnapshot(snapRule)
 	return providerSnapshotID, err
 }

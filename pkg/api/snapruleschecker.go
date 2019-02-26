@@ -77,7 +77,7 @@ func (checker *snapRulesChecker) check(snapRule *models.SnapRule) error {
 		return fmt.Errorf("get account err: %v", err)
 	}
 
-	providerSnapshotID, err := checker.shooter.Take(account, snapRule.VolumeID)
+	providerSnapshotID, err := checker.shooter.Take(account, snapRule)
 	if err != nil {
 		return fmt.Errorf("take snapshot err: %v", err)
 	}

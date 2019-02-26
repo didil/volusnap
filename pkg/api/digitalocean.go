@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/didil/volusnap/pkg/models"
 )
 
 func init() {
@@ -93,11 +95,11 @@ type doTakeSnapshotReq struct {
 	Type string `json:"type,omitempty"`
 }
 
-func (svc *digitalOceanService) TakeSnapshot(volumeID string) (string, error) {
+func (svc *digitalOceanService) TakeSnapshot(snapRule *models.SnapRule) (string, error) {
 	var r bytes.Buffer
 	json.NewEncoder(&r).Encode(&doTakeSnapshotReq{Type: "snapshot"})
 
-	req, err := http.NewRequest(http.MethodPost, svc.rootURL+"/droplets/"+volumeID+"/actions", &r)
+	req, err := http.NewRequest(http.MethodPost, svc.rootURL+"/droplets/"+snapRule.VolumeID+"/actions", &r)
 	if err != nil {
 		return "", fmt.Errorf("DO TakeSnapshot NewRequest err: %v", err)
 	}

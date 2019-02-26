@@ -1,12 +1,16 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/didil/volusnap/pkg/models"
 )
 
 func init() {
@@ -61,9 +65,10 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 		}
 
 		type scalewayVolume struct {
-			ID   string  `json:"id,omitempty"`
-			Name string  `json:"name,omitempty"`
-			Size float64 `json:"size,omitempty"`
+			ID           string  `json:"id,omitempty"`
+			Name         string  `json:"name,omitempty"`
+			Organization string  `json:"organization,omitempty"`
+			Size         float64 `json:"size,omitempty"`
 		}
 
 		type volumesList struct {
@@ -81,10 +86,11 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 		scalewayVolumes := b.Volumes
 		for _, sVol := range scalewayVolumes {
 			volumes = append(volumes, Volume{
-				ID:     sVol.ID,
-				Name:   sVol.Name,
-				Size:   sVol.Size / (math.Pow10(9)),
-				Region: reg,
+				ID:           sVol.ID,
+				Name:         sVol.Name,
+				Organization: sVol.Organization,
+				Size:         sVol.Size / (math.Pow10(9)),
+				Region:       reg,
 			})
 		}
 	}
@@ -92,6 +98,65 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 	return volumes, nil
 }
 
-func (svc *scalewayService) TakeSnapshot(volumeID string) (string, error) {
-	return "", fmt.Errorf("SCALEWAY TakeSnapshot NOT IMPLEMENTED")
+type scalewayTakeSnapshotReq struct {
+	VolumeID     string `json:"volume_id"`
+	Name         string `json:"name"`
+	Organization string `json:"organization"`
+}
+
+func (svc *scalewayService) TakeSnapshot(snapRule *models.SnapRule) (string, error) {
+	var reqJSON bytes.Buffer
+
+	json.NewEncoder(&reqJSON).Encode(&scalewayTakeSnapshotReq{
+		VolumeID:     snapRule.VolumeID,
+		Organization: snapRule.VolumeOrganization,
+		Name:         "volusnap-" + snapRule.VolumeName + "-" + strconv.Itoa(int(time.Now().Unix())),
+	})
+
+	rootURL := svc.rootURLs[snapRule.VolumeRegion]
+	if rootURL == "" {
+		return "", fmt.Errorf("Scaleway rootURL not found for: %v", snapRule.VolumeRegion)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, rootURL+"/snapshots", &reqJSON)
+	if err != nil {
+		return "", fmt.Errorf("Scaleway TakeSnapshot NewRequest err: %v", err)
+	}
+
+	req.Header.Set("X-Auth-Token", svc.token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "VoluSnap")
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("Scaleway TakeSnapshot req err: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return "", fmt.Errorf("Scaleway TakeSnapshot %v : %v", resp.Status, string(body))
+	}
+
+	type scalewaySnapshot struct {
+		ID    string `json:"id,omitempty"`
+		State string `json:"state,omitempty"`
+	}
+
+	type actionResp struct {
+		Snapshot scalewaySnapshot `json:"snapshot,omitempty"`
+	}
+
+	var a actionResp
+
+	err = json.NewDecoder(resp.Body).Decode(&a)
+	if err != nil {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return "", fmt.Errorf("Scaleway TakeSnapshot json decode err: %v , body: %v", err, body)
+	}
+
+	providerSnapshotID := a.Snapshot.ID
+
+	return providerSnapshotID, nil
 }

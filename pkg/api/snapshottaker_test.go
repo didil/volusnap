@@ -9,13 +9,13 @@ import (
 )
 
 func Test_snapshotTaker_Take(t *testing.T) {
-	volumeID := "my-vol-101"
+	snapRule := &models.SnapRule{VolumeID: "my-vol-101"}
 	providerSnapshotID := "my-snap-5"
 
 	account := &models.Account{Provider: "test-provider", Token: "test-token"}
 
 	providerSvc := new(mockProviderSvc)
-	providerSvc.On("TakeSnapshot", volumeID).Return(providerSnapshotID, nil)
+	providerSvc.On("TakeSnapshot", snapRule).Return(providerSnapshotID, nil)
 
 	pServiceFactory := new(mockProviderServiceFactory)
 	pServiceFactory.On("Build", "test-token").Return(providerSvc)
@@ -23,7 +23,7 @@ func Test_snapshotTaker_Take(t *testing.T) {
 	pRegistry.register("test-provider", pServiceFactory)
 
 	snapshotTaker := newSnapshotTaker()
-	myProviderSnapshotID, err := snapshotTaker.Take(account, volumeID)
+	myProviderSnapshotID, err := snapshotTaker.Take(account, snapRule)
 	assert.NoError(t, err)
 
 	assert.Equal(t, providerSnapshotID, myProviderSnapshotID)

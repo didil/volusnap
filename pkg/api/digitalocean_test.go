@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/didil/volusnap/pkg/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -97,10 +98,10 @@ func Test_digitalOceanService_TakeSnapshot(t *testing.T) {
 	factory := newDigitalOceanServiceFactory()
 	doSvc := factory.Build(token).(*digitalOceanService)
 
-	volumeID := "vol-3"
+	snapRule := &models.SnapRule{VolumeID: "vol-3"}
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, r.URL.Path, "/droplets/"+volumeID+"/actions")
+		assert.Equal(t, r.URL.Path, "/droplets/"+snapRule.VolumeID+"/actions")
 
 		var reqJSON doTakeSnapshotReq
 		err := json.NewDecoder(r.Body).Decode(&reqJSON)
@@ -157,7 +158,7 @@ func Test_digitalOceanService_TakeSnapshot(t *testing.T) {
 
 	doSvc.rootURL = s.URL
 
-	providerSnapshotID, err := doSvc.TakeSnapshot(volumeID)
+	providerSnapshotID, err := doSvc.TakeSnapshot(snapRule)
 	assert.NoError(t, err)
 
 	assert.Equal(t, providerSnapshotID, "36805022")

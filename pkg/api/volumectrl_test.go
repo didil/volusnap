@@ -22,8 +22,8 @@ func (m *mockProviderSvc) ListVolumes() ([]Volume, error) {
 	return args.Get(0).([]Volume), args.Error(1)
 }
 
-func (m *mockProviderSvc) TakeSnapshot(volumeID string) (string, error) {
-	args := m.Called(volumeID)
+func (m *mockProviderSvc) TakeSnapshot(snapRule *models.SnapRule) (string, error) {
+	args := m.Called(snapRule)
 	return args.String(0), args.Error(1)
 }
 
