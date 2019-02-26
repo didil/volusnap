@@ -29,13 +29,13 @@ type digitalOceanService struct {
 	rootURL string
 }
 
-func (do *digitalOceanService) ListVolumes() ([]Volume, error) {
-	req, err := http.NewRequest(http.MethodGet, do.rootURL+"/droplets", nil)
+func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
+	req, err := http.NewRequest(http.MethodGet, svc.rootURL+"/droplets", nil)
 	if err != nil {
 		return nil, fmt.Errorf("DO list droplets NewRequest err: %v", err)
 	}
 
-	req.Header.Set("Authorization", "Bearer "+do.token)
+	req.Header.Set("Authorization", "Bearer "+svc.token)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", "VoluSnap")
 
