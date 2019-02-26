@@ -23,6 +23,11 @@ func (m *mockSnapRuleSvc) List(accountID int) (models.SnapRuleSlice, error) {
 	return args.Get(0).(models.SnapRuleSlice), args.Error(1)
 }
 
+func (m *mockSnapRuleSvc) ListAll() (models.SnapRuleSlice, error) {
+	args := m.Called()
+	return args.Get(0).(models.SnapRuleSlice), args.Error(1)
+}
+
 func (m *mockSnapRuleSvc) Create(accountID int, frequency int, volumeID string, volumeName string, volumeRegion string) (int, error) {
 	args := m.Called(accountID, frequency, volumeID, volumeName, volumeRegion)
 	return args.Int(0), args.Error(1)
@@ -39,7 +44,7 @@ func Test_handleListSnapRulesOK(t *testing.T) {
 	accountID := 101
 	account := &models.Account{ID: accountID, Provider: "test-provider", Token: "test-token"}
 
-	accountSvc.On("Get", userID, accountID).Return(account, nil)
+	accountSvc.On("GetForUser", userID, accountID).Return(account, nil)
 
 	snapRules := models.SnapRuleSlice{
 		&models.SnapRule{ID: 15},
@@ -68,6 +73,7 @@ func Test_handleListSnapRulesOK(t *testing.T) {
 	assert.ElementsMatch(t, listResp.SnapRules, snapRules)
 
 	accountSvc.AssertExpectations(t)
+	snapRuleSvc.AssertExpectations(t)
 }
 
 func Test_handleCreateSnapRuleOK(t *testing.T) {
@@ -82,7 +88,7 @@ func Test_handleCreateSnapRuleOK(t *testing.T) {
 	accountID := 101
 	account := &models.Account{ID: accountID, Provider: "test-provider", Token: "test-token"}
 
-	accountSvc.On("Get", userID, accountID).Return(account, nil)
+	accountSvc.On("GetForUser", userID, accountID).Return(account, nil)
 
 	snapRuleID := 56
 

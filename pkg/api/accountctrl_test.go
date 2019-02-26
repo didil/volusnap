@@ -27,8 +27,13 @@ func (m *mockAccountSvc) Create(userID int, provider string, name string, token 
 	return args.Int(0), args.Error(1)
 }
 
-func (m *mockAccountSvc) Get(userID, accountID int) (*models.Account, error) {
+func (m *mockAccountSvc) GetForUser(userID, accountID int) (*models.Account, error) {
 	args := m.Called(userID, accountID)
+	return args.Get(0).(*models.Account), args.Error(1)
+}
+
+func (m *mockAccountSvc) Get(accountID int) (*models.Account, error) {
+	args := m.Called(accountID)
 	return args.Get(0).(*models.Account), args.Error(1)
 }
 

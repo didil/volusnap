@@ -36,7 +36,7 @@ func (ctrl *snapRuleController) handleListSnapRules(w http.ResponseWriter, r *ht
 
 	// fetch account by user ID to make sure user is authorized to access it
 	userID := r.Context().Value(ctxKey("userID")).(int)
-	account, err := ctrl.accountSvc.Get(userID, accountID)
+	account, err := ctrl.accountSvc.GetForUser(userID, accountID)
 	if err != nil {
 		jsonError(w, fmt.Sprintf("could not get account: %v", err), http.StatusInternalServerError)
 		return
@@ -71,7 +71,7 @@ func (ctrl *snapRuleController) handleCreateSnapRule(w http.ResponseWriter, r *h
 
 	// fetch account by user ID to make sure user is authorized to access it
 	userID := r.Context().Value(ctxKey("userID")).(int)
-	account, err := ctrl.accountSvc.Get(userID, accountID)
+	account, err := ctrl.accountSvc.GetForUser(userID, accountID)
 	if err != nil {
 		jsonError(w, fmt.Sprintf("could not get account: %v", err), http.StatusInternalServerError)
 		return
@@ -85,7 +85,7 @@ func (ctrl *snapRuleController) handleCreateSnapRule(w http.ResponseWriter, r *h
 		return
 	}
 
-	snapRuleID, err := ctrl.snapRuleSvc.Create(account.ID, create.Frequency, create.VolumeID, create.VolumeName,create.VolumeRegion)
+	snapRuleID, err := ctrl.snapRuleSvc.Create(account.ID, create.Frequency, create.VolumeID, create.VolumeName, create.VolumeRegion)
 	if err != nil {
 		jsonError(w, fmt.Sprintf("CreateAccount err: %v", err), http.StatusInternalServerError)
 		return

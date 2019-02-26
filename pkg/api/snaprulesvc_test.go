@@ -53,6 +53,37 @@ func (suite *SnapRuleTestSuite) Test_snapRuleService_List() {
 	suite.Len(snapRules, 2)
 }
 
+func (suite *SnapRuleTestSuite) Test_snapRuleService_ListAll() {
+	db := suite.db
+	defer func() {
+		models.SnapRules().DeleteAll(db)
+		models.Accounts().DeleteAll(db)
+		models.Users().DeleteAll(db)
+	}()
+
+	user := models.User{Email: "ex@example.com"}
+	err := user.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	acc := models.Account{UserID: user.ID, Provider: "DigitalOcean"}
+	err = acc.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	snapRule1 := models.SnapRule{AccountID: acc.ID, VolumeID: "vol-1", Frequency: 2}
+	err = snapRule1.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	snapRule2 := models.SnapRule{AccountID: acc.ID, VolumeID: "vol-2", Frequency: 4}
+	err = snapRule2.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	snapRuleSvc := newSnapRuleService(db)
+	snapRules, err := snapRuleSvc.ListAll()
+	suite.NoError(err)
+
+	suite.Len(snapRules, 2)
+}
+
 func (suite *SnapRuleTestSuite) Test_snapRuleService_CreateOk() {
 	db := suite.db
 	defer func() {

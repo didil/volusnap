@@ -80,14 +80,17 @@ var SnapRuleWhere = struct {
 
 // SnapRuleRels is where relationship names are stored.
 var SnapRuleRels = struct {
-	Account string
+	Account   string
+	Snapshots string
 }{
-	Account: "Account",
+	Account:   "Account",
+	Snapshots: "Snapshots",
 }
 
 // snapRuleR is where relationships are stored.
 type snapRuleR struct {
-	Account *Account
+	Account   *Account
+	Snapshots SnapshotSlice
 }
 
 // NewStruct creates a new relationship struct
@@ -358,6 +361,27 @@ func (o *SnapRule) Account(mods ...qm.QueryMod) accountQuery {
 	return query
 }
 
+// Snapshots retrieves all the snapshot's Snapshots with an executor.
+func (o *SnapRule) Snapshots(mods ...qm.QueryMod) snapshotQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"snapshots\".\"snap_rule_id\"=?", o.ID),
+	)
+
+	query := Snapshots(queryMods...)
+	queries.SetFrom(query.Query, "\"snapshots\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"snapshots\".*"})
+	}
+
+	return query
+}
+
 // LoadAccount allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
 func (snapRuleL) LoadAccount(e boil.Executor, singular bool, maybeSnapRule interface{}, mods queries.Applicator) error {
@@ -459,6 +483,101 @@ func (snapRuleL) LoadAccount(e boil.Executor, singular bool, maybeSnapRule inter
 	return nil
 }
 
+// LoadSnapshots allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (snapRuleL) LoadSnapshots(e boil.Executor, singular bool, maybeSnapRule interface{}, mods queries.Applicator) error {
+	var slice []*SnapRule
+	var object *SnapRule
+
+	if singular {
+		object = maybeSnapRule.(*SnapRule)
+	} else {
+		slice = *maybeSnapRule.(*[]*SnapRule)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &snapRuleR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &snapRuleR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`snapshots`), qm.WhereIn(`snap_rule_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.Query(e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load snapshots")
+	}
+
+	var resultSlice []*Snapshot
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice snapshots")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on snapshots")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for snapshots")
+	}
+
+	if len(snapshotAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.Snapshots = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &snapshotR{}
+			}
+			foreign.R.SnapRule = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.SnapRuleID {
+				local.R.Snapshots = append(local.R.Snapshots, foreign)
+				if foreign.R == nil {
+					foreign.R = &snapshotR{}
+				}
+				foreign.R.SnapRule = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // SetAccount of the snapRule to the related item.
 // Sets o.R.Account to related.
 // Adds o to related.R.SnapRules.
@@ -503,6 +622,59 @@ func (o *SnapRule) SetAccount(exec boil.Executor, insert bool, related *Account)
 		related.R.SnapRules = append(related.R.SnapRules, o)
 	}
 
+	return nil
+}
+
+// AddSnapshots adds the given related objects to the existing relationships
+// of the snap_rule, optionally inserting them as new records.
+// Appends related to o.R.Snapshots.
+// Sets related.R.SnapRule appropriately.
+func (o *SnapRule) AddSnapshots(exec boil.Executor, insert bool, related ...*Snapshot) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.SnapRuleID = o.ID
+			if err = rel.Insert(exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"snapshots\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"snap_rule_id"}),
+				strmangle.WhereClause("\"", "\"", 2, snapshotPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.Exec(updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.SnapRuleID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &snapRuleR{
+			Snapshots: related,
+		}
+	} else {
+		o.R.Snapshots = append(o.R.Snapshots, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &snapshotR{
+				SnapRule: o,
+			}
+		} else {
+			rel.R.SnapRule = o
+		}
+	}
 	return nil
 }
 

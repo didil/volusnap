@@ -10,6 +10,7 @@ import (
 
 type snapRuleSvcer interface {
 	List(accountID int) (models.SnapRuleSlice, error)
+	ListAll() (models.SnapRuleSlice, error)
 	Create(accountID int, frequency int, volumeID string, volumeName string, volumeRegion string) (int, error)
 }
 
@@ -23,6 +24,11 @@ type snapRuleService struct {
 
 func (svc *snapRuleService) List(accountID int) (models.SnapRuleSlice, error) {
 	snapRules, err := models.SnapRules(models.SnapRuleWhere.AccountID.EQ(accountID)).All(svc.db)
+	return snapRules, err
+}
+
+func (svc *snapRuleService) ListAll() (models.SnapRuleSlice, error) {
+	snapRules, err := models.SnapRules().All(svc.db)
 	return snapRules, err
 }
 

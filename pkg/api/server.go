@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -9,13 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 )
-
-type appController struct {
-	authCtrl     *authController
-	accountCtrl  *accountController
-	volumeCtrl   *volumeController
-	snapRuleCtrl *snapRuleController
-}
 
 func buildRouter(app *appController) http.Handler {
 	r := mux.NewRouter()
@@ -40,6 +34,10 @@ func buildRouter(app *appController) http.Handler {
 	snapRuleR.HandleFunc("/", app.snapRuleCtrl.handleListSnapRules).Methods(http.MethodGet)
 	snapRuleR.HandleFunc("/", app.snapRuleCtrl.handleCreateSnapRule).Methods(http.MethodPost)
 
+	snapshotR := apiR.PathPrefix("/account/{accountID:[0-9]+}/snapshot").Subrouter()
+	snapshotR.Use(authMiddleware)
+	snapshotR.HandleFunc("/", app.snapshotCtrl.handleListSnapshots).Methods(http.MethodGet)
+
 	return r
 }
 
@@ -56,26 +54,22 @@ func StartServer(port int) error {
 	}
 	defer db.Close()
 
-	authSvc := newAuthService(db)
-	authCtrl := newAuthController(authSvc)
+	startSnapRulesChecker(db)
 
-	accountSvc := newAccountService(db)
-	accountCtrl := newAccountController(accountSvc)
+	appCtrl := buildAppController(db)
 
-	volumeCtrl := newVolumeController(accountSvc)
-
-	snapRuleSvc := newSnapRuleService(db)
-	snapRuleCtrl := newSnapRuleController(snapRuleSvc, accountSvc)
-
-	r := buildRouter(&appController{
-		authCtrl:     authCtrl,
-		accountCtrl:  accountCtrl,
-		volumeCtrl:   volumeCtrl,
-		snapRuleCtrl: snapRuleCtrl,
-	})
-
+	r := buildRouter(appCtrl)
 	logrus.Infof("Starting server on port %v ...", port)
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), r)
+}
+
+func startSnapRulesChecker(db *sql.DB) {
+	snapRuleSvc := newSnapRuleService(db)
+	snapshotSvc := newSnapshotService(db)
+	accountSvc := newAccountService(db)
+	shooter := newSnapshotTaker()
+	checker := newSnapRulesChecker(snapRuleSvc, snapshotSvc, accountSvc, shooter)
+	checker.Start()
 }
 
 type jsonErr struct {

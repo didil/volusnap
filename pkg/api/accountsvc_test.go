@@ -89,6 +89,33 @@ func (suite *AuthTestSuite) Test_accountService_CreateInvalidProvider() {
 	suite.EqualError(err, "invalid provider: gammax_cloud")
 }
 
+func (suite *AuthTestSuite) Test_accountService_GetForUser() {
+	db := suite.db
+	defer func() {
+		models.Accounts().DeleteAll(db)
+		models.Users().DeleteAll(db)
+	}()
+
+	user := models.User{Email: "ex@example.com"}
+	err := user.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	acc1 := models.Account{UserID: user.ID, Provider: "DigitalOcean"}
+	err = acc1.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	acc2 := models.Account{UserID: user.ID, Provider: "Scaleway"}
+	err = acc2.Insert(db, boil.Infer())
+	suite.NoError(err)
+
+	accountSvc := newAccountService(db)
+	account, err := accountSvc.GetForUser(user.ID, acc1.ID)
+	suite.NoError(err)
+
+	suite.Equal(account.Provider, acc1.Provider)
+	suite.Equal(account.ID, acc1.ID)
+}
+
 func (suite *AuthTestSuite) Test_accountService_Get() {
 	db := suite.db
 	defer func() {
@@ -109,7 +136,7 @@ func (suite *AuthTestSuite) Test_accountService_Get() {
 	suite.NoError(err)
 
 	accountSvc := newAccountService(db)
-	account, err := accountSvc.Get(user.ID, acc1.ID)
+	account, err := accountSvc.Get(acc1.ID)
 	suite.NoError(err)
 
 	suite.Equal(account.Provider, acc1.Provider)

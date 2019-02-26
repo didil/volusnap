@@ -22,6 +22,11 @@ func (m *mockProviderSvc) ListVolumes() ([]Volume, error) {
 	return args.Get(0).([]Volume), args.Error(1)
 }
 
+func (m *mockProviderSvc) TakeSnapshot(volumeID string) error {
+	args := m.Called(volumeID)
+	return args.Error(0)
+}
+
 type mockProviderServiceFactory struct {
 	mock.Mock
 }
@@ -42,7 +47,7 @@ func Test_handleListVolumesOK(t *testing.T) {
 	accountID := 101
 	account := &models.Account{Provider: "test-provider", Token: "test-token"}
 
-	accountSvc.On("Get", userID, accountID).Return(account, nil)
+	accountSvc.On("GetForUser", userID, accountID).Return(account, nil)
 
 	volumes := []Volume{
 		Volume{ID: "x-1", Name: "volume-name", Size: 5},
@@ -77,4 +82,6 @@ func Test_handleListVolumesOK(t *testing.T) {
 	assert.ElementsMatch(t, listResp.Volumes, volumes)
 
 	accountSvc.AssertExpectations(t)
+	pServiceFactory.AssertExpectations(t)
+	providerSvc.AssertExpectations(t)
 }

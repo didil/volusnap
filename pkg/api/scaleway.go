@@ -91,3 +91,7 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 
 	return volumes, nil
 }
+
+func (svc *scalewayService) TakeSnapshot(volumeID string) error {
+	return nil
+}

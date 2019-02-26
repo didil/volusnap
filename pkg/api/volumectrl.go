@@ -28,7 +28,7 @@ func (ctrl *volumeController) handleListVolumes(w http.ResponseWriter, r *http.R
 	}
 
 	userID := r.Context().Value(ctxKey("userID")).(int)
-	account, err := ctrl.accountSvc.Get(userID, accountID)
+	account, err := ctrl.accountSvc.GetForUser(userID, accountID)
 	if err != nil {
 		jsonError(w, fmt.Sprintf("could not get account: %v", err), http.StatusInternalServerError)
 		return

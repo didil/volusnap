@@ -87,3 +87,7 @@ func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
 
 	return volumes, nil
 }
+
+func (svc *digitalOceanService) TakeSnapshot(volumeID string) error {
+	return nil
+}

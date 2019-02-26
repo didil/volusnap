@@ -8,6 +8,7 @@ import (
 
 type providerSvcer interface {
 	ListVolumes() ([]Volume, error)
+	TakeSnapshot(volumeID string) error
 }
 
 func getProviderService(account *models.Account) (providerSvcer, error) {

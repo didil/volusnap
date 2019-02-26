@@ -14,7 +14,8 @@ import (
 type accountSvcer interface {
 	List(userID int) (models.AccountSlice, error)
 	Create(userID int, provider string, name string, token string) (int, error)
-	Get(userID, accountID int) (*models.Account, error)
+	GetForUser(userID, accountID int) (*models.Account, error)
+	Get(accountID int) (*models.Account, error)
 }
 
 func newAccountService(db *sql.DB) *accountService {
@@ -48,9 +49,16 @@ func (svc *accountService) Create(userID int, provider string, name string, toke
 	return account.ID, nil
 }
 
-func (svc *accountService) Get(userID, accountID int) (*models.Account, error) {
+func (svc *accountService) GetForUser(userID, accountID int) (*models.Account, error) {
 	account, err := models.Accounts(
 		qm.Where("user_id = ?", userID),
+		qm.Where("id = ?", accountID),
+	).One(svc.db)
+	return account, err
+}
+
+func (svc *accountService) Get(accountID int) (*models.Account, error) {
+	account, err := models.Accounts(
 		qm.Where("id = ?", accountID),
 	).One(svc.db)
 	return account, err
