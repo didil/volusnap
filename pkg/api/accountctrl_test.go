@@ -82,11 +82,11 @@ func Test_handleListAccountsOK(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var lAResp listAccountsResp
-	err = json.NewDecoder(resp.Body).Decode(&lAResp)
+	var listResp listAccountsResp
+	err = json.NewDecoder(resp.Body).Decode(&listResp)
 	assert.NoError(t, err)
 
-	assert.ElementsMatch(t, lAResp.Accounts, accounts)
+	assert.ElementsMatch(t, listResp.Accounts, accounts)
 
 	accountSvc.AssertExpectations(t)
 }
@@ -120,11 +120,11 @@ func Test_handleCreateAccountOK(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var cAResp createAccountResp
-	err = json.NewDecoder(resp.Body).Decode(&cAResp)
+	var createResp createAccountResp
+	err = json.NewDecoder(resp.Body).Decode(&createResp)
 	assert.NoError(t, err)
 
-	assert.Equal(t, cAResp.ID, accountID)
+	assert.Equal(t, createResp.ID, accountID)
 
 	accountSvc.AssertExpectations(t)
 }

@@ -4,9 +4,11 @@
 package models
 
 var TableNames = struct {
-	Accounts string
-	Users    string
+	Accounts  string
+	SnapRules string
+	Users     string
 }{
-	Accounts: "accounts",
-	Users:    "users",
+	Accounts:  "accounts",
+	SnapRules: "snap_rules",
+	Users:     "users",
 }

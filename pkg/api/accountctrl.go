@@ -17,7 +17,7 @@ type accountController struct {
 }
 
 type listAccountsResp struct {
-	Accounts models.AccountSlice `json:"accounts,omitempty"`
+	Accounts models.AccountSlice `json:"accounts"`
 }
 
 func (ctrl *accountController) handleListAccounts(w http.ResponseWriter, r *http.Request) {

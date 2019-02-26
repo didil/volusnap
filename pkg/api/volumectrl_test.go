@@ -70,11 +70,11 @@ func Test_handleListVolumesOK(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var lVResp listVolumesResp
-	err = json.NewDecoder(resp.Body).Decode(&lVResp)
+	var listResp listVolumesResp
+	err = json.NewDecoder(resp.Body).Decode(&listResp)
 	assert.NoError(t, err)
 
-	assert.ElementsMatch(t, lVResp.Volumes, volumes)
+	assert.ElementsMatch(t, listResp.Volumes, volumes)
 
 	accountSvc.AssertExpectations(t)
 }

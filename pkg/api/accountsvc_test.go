@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"testing"
 
 	"github.com/didil/volusnap/pkg/models"
 	"github.com/stretchr/testify/suite"
@@ -16,6 +17,10 @@ type AccountTestSuite struct {
 func (suite *AccountTestSuite) SetupSuite() {
 	db := bootstrapTests()
 	suite.db = db
+}
+
+func TestAccountTestSuite(t *testing.T) {
+	suite.Run(t, new(AccountTestSuite))
 }
 
 func (suite *AuthTestSuite) Test_accountService_List() {

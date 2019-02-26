@@ -37,7 +37,7 @@ func (do *digitalOceanService) ListVolumes() ([]Volume, error) {
 
 	req.Header.Set("Authorization", "Bearer "+do.token)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "VoluSnap 0.1")
+	req.Header.Set("User-Agent", "VoluSnap")
 
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)

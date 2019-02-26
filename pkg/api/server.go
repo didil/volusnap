@@ -11,9 +11,10 @@ import (
 )
 
 type appController struct {
-	authCtrl    *authController
-	accountCtrl *accountController
-	volumeCtrl  *volumeController
+	authCtrl     *authController
+	accountCtrl  *accountController
+	volumeCtrl   *volumeController
+	snapRuleCtrl *snapRuleController
 }
 
 func buildRouter(app *appController) http.Handler {
@@ -33,6 +34,11 @@ func buildRouter(app *appController) http.Handler {
 	volumeR := apiR.PathPrefix("/account/{accountID:[0-9]+}/volume").Subrouter()
 	volumeR.Use(authMiddleware)
 	volumeR.HandleFunc("/", app.volumeCtrl.handleListVolumes).Methods(http.MethodGet)
+
+	snapRuleR := apiR.PathPrefix("/account/{accountID:[0-9]+}/snaprule").Subrouter()
+	snapRuleR.Use(authMiddleware)
+	snapRuleR.HandleFunc("/", app.snapRuleCtrl.handleListSnapRules).Methods(http.MethodGet)
+	snapRuleR.HandleFunc("/", app.snapRuleCtrl.handleCreateSnapRule).Methods(http.MethodPost)
 
 	return r
 }
@@ -58,10 +64,14 @@ func StartServer(port int) error {
 
 	volumeCtrl := newVolumeController(accountSvc)
 
+	snapRuleSvc := newSnapRuleService(db)
+	snapRuleCtrl := newSnapRuleController(snapRuleSvc, accountSvc)
+
 	r := buildRouter(&appController{
-		authCtrl:    authCtrl,
-		accountCtrl: accountCtrl,
-		volumeCtrl:  volumeCtrl,
+		authCtrl:     authCtrl,
+		accountCtrl:  accountCtrl,
+		volumeCtrl:   volumeCtrl,
+		snapRuleCtrl: snapRuleCtrl,
 	})
 
 	logrus.Infof("Starting server on port %v ...", port)
