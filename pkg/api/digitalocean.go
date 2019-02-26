@@ -47,7 +47,7 @@ func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= 400 {
 		body, _ := ioutil.ReadAll(resp.Body)
 		return nil, fmt.Errorf("DO list droplets %v : %v", resp.Status, string(body))
 	}
@@ -89,13 +89,13 @@ func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
 	return volumes, nil
 }
 
-func (svc *digitalOceanService) TakeSnapshot(volumeID string) (string, error) {
-	type takeSnapshotReq struct {
-		Type string `json:"type,omitempty"`
-	}
+type doTakeSnapshotReq struct {
+	Type string `json:"type,omitempty"`
+}
 
+func (svc *digitalOceanService) TakeSnapshot(volumeID string) (string, error) {
 	var r bytes.Buffer
-	json.NewEncoder(&r).Encode(&takeSnapshotReq{Type: "snapshot"})
+	json.NewEncoder(&r).Encode(&doTakeSnapshotReq{Type: "snapshot"})
 
 	req, err := http.NewRequest(http.MethodPost, svc.rootURL+"/droplets/"+volumeID+"/actions", &r)
 	if err != nil {
@@ -113,7 +113,7 @@ func (svc *digitalOceanService) TakeSnapshot(volumeID string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode >= 400 {
 		body, _ := ioutil.ReadAll(resp.Body)
 		return "", fmt.Errorf("DO TakeSnapshot %v : %v", resp.Status, string(body))
 	}
