@@ -22,6 +22,7 @@ func Test_scalewayService_ListVolumes(t *testing.T) {
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.URL.Path, "/volumes")
+		assert.Equal(t, token, r.Header.Get("X-Auth-Token"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
@@ -71,6 +72,7 @@ func Test_scalewayService_TakeSnapshot(t *testing.T) {
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.URL.Path, "/snapshots")
+		assert.Equal(t, token, r.Header.Get("X-Auth-Token"))
 
 		var reqJSON scalewayTakeSnapshotReq
 		err := json.NewDecoder(r.Body).Decode(&reqJSON)

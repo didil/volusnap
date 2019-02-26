@@ -22,6 +22,7 @@ func Test_digitalOceanService_ListVolumes(t *testing.T) {
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.URL.Path, "/droplets")
+		assert.Equal(t, "Bearer "+token, r.Header.Get("Authorization"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{
@@ -102,6 +103,7 @@ func Test_digitalOceanService_TakeSnapshot(t *testing.T) {
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.URL.Path, "/droplets/"+snapRule.VolumeID+"/actions")
+		assert.Equal(t, "Bearer "+token, r.Header.Get("Authorization"))
 
 		var reqJSON doTakeSnapshotReq
 		err := json.NewDecoder(r.Body).Decode(&reqJSON)
