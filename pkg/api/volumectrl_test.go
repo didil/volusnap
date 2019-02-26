@@ -22,9 +22,9 @@ func (m *mockProviderSvc) ListVolumes() ([]Volume, error) {
 	return args.Get(0).([]Volume), args.Error(1)
 }
 
-func (m *mockProviderSvc) TakeSnapshot(volumeID string) error {
+func (m *mockProviderSvc) TakeSnapshot(volumeID string) (string, error) {
 	args := m.Called(volumeID)
-	return args.Error(0)
+	return args.String(0), args.Error(1)
 }
 
 type mockProviderServiceFactory struct {

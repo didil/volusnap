@@ -13,7 +13,7 @@ import (
 type snapshotSvcer interface {
 	List(snapRuleID int) (models.SnapshotSlice, error)
 	ExistsFor(snapRuleID int, createdAfter time.Time) (bool, error)
-	Create(snapRuleID int) (int, error)
+	Create(snapRuleID int, providerSnapshotID string) (int, error)
 }
 
 func newSnapshotService(db *sql.DB) *snapshotService {
@@ -39,9 +39,10 @@ func (svc *snapshotService) ExistsFor(snapRuleID int, createdAfter time.Time) (b
 	return count > 0, err
 }
 
-func (svc *snapshotService) Create(snapRuleID int) (int, error) {
+func (svc *snapshotService) Create(snapRuleID int, providerSnapshotID string) (int, error) {
 	snapshot := models.Snapshot{
-		SnapRuleID: snapRuleID,
+		SnapRuleID:         snapRuleID,
+		ProviderSnapshotID: providerSnapshotID,
 	}
 	err := snapshot.Insert(svc.db, boil.Infer())
 

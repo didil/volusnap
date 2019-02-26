@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -88,6 +89,53 @@ func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
 	return volumes, nil
 }
 
-func (svc *digitalOceanService) TakeSnapshot(volumeID string) error {
-	return nil
+func (svc *digitalOceanService) TakeSnapshot(volumeID string) (string, error) {
+	type takeSnapshotReq struct {
+		Type string `json:"type,omitempty"`
+	}
+
+	var r bytes.Buffer
+	json.NewEncoder(&r).Encode(&takeSnapshotReq{Type: "snapshot"})
+
+	req, err := http.NewRequest(http.MethodPost, svc.rootURL+"/droplets/"+volumeID+"/actions", &r)
+	if err != nil {
+		return "", fmt.Errorf("DO TakeSnapshot NewRequest err: %v", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+svc.token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "VoluSnap")
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("DO TakeSnapshot req err: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return "", fmt.Errorf("DO TakeSnapshot %v : %v", resp.Status, string(body))
+	}
+
+	type action struct {
+		ID     float64 `json:"id,omitempty"`
+		Status string  `json:"status,omitempty"`
+	}
+
+	type actionResp struct {
+		Action action `json:"action,omitempty"`
+	}
+
+	var a actionResp
+
+	err = json.NewDecoder(resp.Body).Decode(&a)
+	if err != nil {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return "", fmt.Errorf("DO TakeSnapshot json decode err: %v , body: %v", err, body)
+	}
+
+	providerSnapshotID := strconv.Itoa(int(a.Action.ID))
+
+	return providerSnapshotID, nil
 }

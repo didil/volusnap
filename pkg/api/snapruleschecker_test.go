@@ -14,9 +14,9 @@ type mockSnapshotTaker struct {
 	mock.Mock
 }
 
-func (m *mockSnapshotTaker) Take(account *models.Account, volumeID string) error {
+func (m *mockSnapshotTaker) Take(account *models.Account, volumeID string) (string, error) {
 	args := m.Called(account, volumeID)
-	return args.Error(0)
+	return args.String(0), args.Error(1)
 }
 
 func Test_snapRulesChecker_checkAll(t *testing.T) {
@@ -28,6 +28,7 @@ func Test_snapRulesChecker_checkAll(t *testing.T) {
 	account := &models.Account{ID: 1}
 
 	snapshotID := 66
+	providerSnapshotID := "the-snap"
 
 	snapRules := models.SnapRuleSlice{
 		&models.SnapRule{ID: 5, Frequency: 12, AccountID: account.ID, VolumeID: "volum-1"},
@@ -38,11 +39,11 @@ func Test_snapRulesChecker_checkAll(t *testing.T) {
 	snapshotSvc.On("ExistsFor", snapRules[0].ID, mock.AnythingOfType("time.Time")).Return(true, nil)
 	snapshotSvc.On("ExistsFor", snapRules[1].ID, mock.AnythingOfType("time.Time")).Return(false, nil)
 
-	snapshotSvc.On("Create", snapRules[1].ID).Return(snapshotID, nil)
+	snapshotSvc.On("Create", snapRules[1].ID, providerSnapshotID).Return(snapshotID, nil)
 
 	accountSvc.On("Get", account.ID).Return(account, nil)
 
-	shooter.On("Take", account, snapRules[1].VolumeID).Return(nil)
+	shooter.On("Take", account, snapRules[1].VolumeID).Return(providerSnapshotID, nil)
 
 	checker := newSnapRulesChecker(snapRuleSvc, snapshotSvc, accountSvc, shooter)
 

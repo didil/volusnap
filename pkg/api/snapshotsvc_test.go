@@ -125,6 +125,8 @@ func (suite *SnapshotTestSuite) Test_snapshotService_Create() {
 		models.Users().DeleteAll(db)
 	}()
 
+	providerSnapShotID := "my-snap"
+
 	user := models.User{Email: "ex@example.com"}
 	err := user.Insert(db, boil.Infer())
 	suite.NoError(err)
@@ -138,7 +140,7 @@ func (suite *SnapshotTestSuite) Test_snapshotService_Create() {
 	suite.NoError(err)
 
 	snapshotSvc := newSnapshotService(db)
-	snapshotID, err := snapshotSvc.Create(snapRule1.ID)
+	snapshotID, err := snapshotSvc.Create(snapRule1.ID, providerSnapShotID)
 	suite.NoError(err)
 
 	snapshot, err := models.FindSnapshot(db, snapshotID)
@@ -146,4 +148,5 @@ func (suite *SnapshotTestSuite) Test_snapshotService_Create() {
 
 	suite.Equal(snapshot.ID, snapshotID)
 	suite.Equal(snapshot.SnapRuleID, snapRule1.ID)
+	suite.Equal(snapshot.ProviderSnapshotID, providerSnapShotID)
 }

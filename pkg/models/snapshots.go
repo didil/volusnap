@@ -23,39 +23,44 @@ import (
 
 // Snapshot is an object representing the database table.
 type Snapshot struct {
-	ID         int       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt  null.Time `boil:"created_at" json:"created_at,omitempty" toml:"created_at" yaml:"created_at,omitempty"`
-	UpdatedAt  null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
-	SnapRuleID int       `boil:"snap_rule_id" json:"snap_rule_id" toml:"snap_rule_id" yaml:"snap_rule_id"`
+	ID                 int       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt          null.Time `boil:"created_at" json:"created_at,omitempty" toml:"created_at" yaml:"created_at,omitempty"`
+	UpdatedAt          null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
+	ProviderSnapshotID string    `boil:"provider_snapshot_id" json:"provider_snapshot_id" toml:"provider_snapshot_id" yaml:"provider_snapshot_id"`
+	SnapRuleID         int       `boil:"snap_rule_id" json:"snap_rule_id" toml:"snap_rule_id" yaml:"snap_rule_id"`
 
 	R *snapshotR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L snapshotL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var SnapshotColumns = struct {
-	ID         string
-	CreatedAt  string
-	UpdatedAt  string
-	SnapRuleID string
+	ID                 string
+	CreatedAt          string
+	UpdatedAt          string
+	ProviderSnapshotID string
+	SnapRuleID         string
 }{
-	ID:         "id",
-	CreatedAt:  "created_at",
-	UpdatedAt:  "updated_at",
-	SnapRuleID: "snap_rule_id",
+	ID:                 "id",
+	CreatedAt:          "created_at",
+	UpdatedAt:          "updated_at",
+	ProviderSnapshotID: "provider_snapshot_id",
+	SnapRuleID:         "snap_rule_id",
 }
 
 // Generated where
 
 var SnapshotWhere = struct {
-	ID         whereHelperint
-	CreatedAt  whereHelpernull_Time
-	UpdatedAt  whereHelpernull_Time
-	SnapRuleID whereHelperint
+	ID                 whereHelperint
+	CreatedAt          whereHelpernull_Time
+	UpdatedAt          whereHelpernull_Time
+	ProviderSnapshotID whereHelperstring
+	SnapRuleID         whereHelperint
 }{
-	ID:         whereHelperint{field: `id`},
-	CreatedAt:  whereHelpernull_Time{field: `created_at`},
-	UpdatedAt:  whereHelpernull_Time{field: `updated_at`},
-	SnapRuleID: whereHelperint{field: `snap_rule_id`},
+	ID:                 whereHelperint{field: `id`},
+	CreatedAt:          whereHelpernull_Time{field: `created_at`},
+	UpdatedAt:          whereHelpernull_Time{field: `updated_at`},
+	ProviderSnapshotID: whereHelperstring{field: `provider_snapshot_id`},
+	SnapRuleID:         whereHelperint{field: `snap_rule_id`},
 }
 
 // SnapshotRels is where relationship names are stored.
@@ -79,8 +84,8 @@ func (*snapshotR) NewStruct() *snapshotR {
 type snapshotL struct{}
 
 var (
-	snapshotColumns               = []string{"id", "created_at", "updated_at", "snap_rule_id"}
-	snapshotColumnsWithoutDefault = []string{"created_at", "updated_at", "snap_rule_id"}
+	snapshotColumns               = []string{"id", "created_at", "updated_at", "provider_snapshot_id", "snap_rule_id"}
+	snapshotColumnsWithoutDefault = []string{"created_at", "updated_at", "provider_snapshot_id", "snap_rule_id"}
 	snapshotColumnsWithDefault    = []string{"id"}
 	snapshotPrimaryKeyColumns     = []string{"id"}
 )

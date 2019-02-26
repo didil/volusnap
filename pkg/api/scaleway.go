@@ -92,6 +92,6 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 	return volumes, nil
 }
 
-func (svc *scalewayService) TakeSnapshot(volumeID string) error {
-	return nil
+func (svc *scalewayService) TakeSnapshot(volumeID string) (string, error) {
+	return "", fmt.Errorf("SCALEWAY TakeSnapshot NOT IMPLEMENTED")
 }

@@ -28,8 +28,8 @@ func (m *mockSnapshotSvc) ExistsFor(snapRuleID int, createdAfter time.Time) (boo
 	return args.Bool(0), args.Error(1)
 }
 
-func (m *mockSnapshotSvc) Create(snapRuleID int) (int, error) {
-	args := m.Called(snapRuleID)
+func (m *mockSnapshotSvc) Create(snapRuleID int, providerSnapshotID string) (int, error) {
+	args := m.Called(snapRuleID, providerSnapshotID)
 	return args.Int(0), args.Error(1)
 }
 func Test_handleListSnapshotsOK(t *testing.T) {

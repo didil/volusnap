@@ -77,12 +77,12 @@ func (checker *snapRulesChecker) check(snapRule *models.SnapRule) error {
 		return fmt.Errorf("get account err: %v", err)
 	}
 
-	err = checker.shooter.Take(account, snapRule.VolumeID)
+	providerSnapshotID, err := checker.shooter.Take(account, snapRule.VolumeID)
 	if err != nil {
 		return fmt.Errorf("take snapshot err: %v", err)
 	}
 
-	id, err := checker.snapshotSvc.Create(snapRule.ID)
+	id, err := checker.snapshotSvc.Create(snapRule.ID, providerSnapshotID)
 	if err != nil {
 		return fmt.Errorf("create snapshot err: %v", err)
 	}
