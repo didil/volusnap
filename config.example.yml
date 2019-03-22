@@ -1,0 +1,8 @@
+db:
+  host: localhost
+  port: 5432
+  user: volusnap
+  name: volusnap
+  password: 123456
+jwt:
+  secret: "1234567890ABC" 

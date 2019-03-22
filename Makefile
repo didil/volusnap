@@ -15,8 +15,8 @@ deps-ci: deps
 test-ci:
 	go test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/...
 build:
-	go build cmd/volusnapd/volusnapd.go
-	go build cmd/volusnapctl/volusnapctl.go
+	go build -o volusnapd cmd/volusnapd/* 
+	go build -o volusnapctl cmd/volusnapctl/*
 sqlboiler:
 	sqlboiler psql --wipe
 
@@ -33,3 +33,10 @@ migrate-dev-down:
 	sql-migrate down -config=sql-migrate.yml -env=development
 migrate-dev-status:
 	sql-migrate status -config=sql-migrate.yml -env=development
+
+migrate-prod-up:
+	sql-migrate up -config=sql-migrate.yml -env=production
+migrate-prod-down:
+	sql-migrate down -config=sql-migrate.yml -env=production
+migrate-prod-status:
+	sql-migrate status -config=sql-migrate.yml -env=production

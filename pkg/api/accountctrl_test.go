@@ -50,7 +50,7 @@ func Test_handleListAccountsAuthErr(t *testing.T) {
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 
-	var jErr jsonErr
+	var jErr JSONErr
 	err = json.NewDecoder(resp.Body).Decode(&jErr)
 	assert.NoError(t, err)
 
