@@ -7,7 +7,7 @@ import (
 )
 
 type providerSvcer interface {
-	ListVolumes() ([]Volume, error)
+	ListVolumes() ([]volume, error)
 	TakeSnapshot(snapRule *models.SnapRule) (string, error)
 }
 

@@ -40,15 +40,14 @@ func startSnapRulesChecker(db *sql.DB) {
 	checker.Start()
 }
 
-// JSONErr struct
-type JSONErr struct {
+type jsonErr struct {
 	Err string `json:"err,omitempty"`
 }
 
 func jsonError(w http.ResponseWriter, errStr string, code int) {
 	w.Header().Set("Content-Type", "application/JSON")
 	w.WriteHeader(code)
-	e := json.NewEncoder(w).Encode(&JSONErr{Err: errStr})
+	e := json.NewEncoder(w).Encode(&jsonErr{Err: errStr})
 	if e != nil {
 		http.Error(w, fmt.Sprintf("json encoding error: %v", e), http.StatusInternalServerError)
 	}

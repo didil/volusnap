@@ -1,12 +1,11 @@
 package api
 
-// Volume struct
-type Volume struct {
+type volume struct {
 	ID   string
 	Name string
 	// size in gigabytes
-	Size         float64
-	Region       string
+	Size   float64
+	Region string
 	// needed for scaleway
 	Organization string
 }

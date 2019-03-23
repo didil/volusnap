@@ -48,7 +48,7 @@ func Test_handleSignupWithErr(t *testing.T) {
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
-	var jErr JSONErr
+	var jErr jsonErr
 	err = json.NewDecoder(resp.Body).Decode(&jErr)
 	assert.NoError(t, err)
 
@@ -109,7 +109,7 @@ func Test_handleLoginWithErr(t *testing.T) {
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 
-	var jErr JSONErr
+	var jErr jsonErr
 	err = json.NewDecoder(resp.Body).Decode(&jErr)
 	assert.NoError(t, err)
 

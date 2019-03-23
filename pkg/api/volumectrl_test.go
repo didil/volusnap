@@ -17,9 +17,9 @@ type mockProviderSvc struct {
 	mock.Mock
 }
 
-func (m *mockProviderSvc) ListVolumes() ([]Volume, error) {
+func (m *mockProviderSvc) ListVolumes() ([]volume, error) {
 	args := m.Called()
-	return args.Get(0).([]Volume), args.Error(1)
+	return args.Get(0).([]volume), args.Error(1)
 }
 
 func (m *mockProviderSvc) TakeSnapshot(snapRule *models.SnapRule) (string, error) {
@@ -49,8 +49,8 @@ func Test_handleListVolumesOK(t *testing.T) {
 
 	accountSvc.On("GetForUser", userID, accountID).Return(account, nil)
 
-	volumes := []Volume{
-		Volume{ID: "x-1", Name: "volume-name", Size: 5},
+	volumes := []volume{
+		volume{ID: "x-1", Name: "volume-name", Size: 5},
 	}
 
 	providerSvc := new(mockProviderSvc)

@@ -32,7 +32,7 @@ type digitalOceanService struct {
 	rootURL string
 }
 
-func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
+func (svc *digitalOceanService) ListVolumes() ([]volume, error) {
 	req, err := http.NewRequest(http.MethodGet, svc.rootURL+"/droplets", nil)
 	if err != nil {
 		return nil, fmt.Errorf("DO list droplets NewRequest err: %v", err)
@@ -77,10 +77,10 @@ func (svc *digitalOceanService) ListVolumes() ([]Volume, error) {
 		return nil, fmt.Errorf("DO list droplets json decode err: %v , body: %v", err, body)
 	}
 
-	var volumes []Volume
+	var volumes []volume
 	droplets := b.Droplets
 	for _, d := range droplets {
-		volumes = append(volumes, Volume{
+		volumes = append(volumes, volume{
 			ID:     strconv.Itoa(int(d.ID)),
 			Name:   d.Name,
 			Size:   d.Disk,

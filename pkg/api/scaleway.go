@@ -39,8 +39,8 @@ type scalewayService struct {
 	rootURLs map[string]string
 }
 
-func (svc *scalewayService) ListVolumes() ([]Volume, error) {
-	var volumes []Volume
+func (svc *scalewayService) ListVolumes() ([]volume, error) {
+	var volumes []volume
 
 	for reg, rootURL := range svc.rootURLs {
 		req, err := http.NewRequest(http.MethodGet, rootURL+"/volumes", nil)
@@ -85,7 +85,7 @@ func (svc *scalewayService) ListVolumes() ([]Volume, error) {
 
 		scalewayVolumes := b.Volumes
 		for _, sVol := range scalewayVolumes {
-			volumes = append(volumes, Volume{
+			volumes = append(volumes, volume{
 				ID:           sVol.ID,
 				Name:         sVol.Name,
 				Organization: sVol.Organization,
