@@ -2,12 +2,14 @@
 
 [![Build Status](https://travis-ci.org/didil/volusnap.svg?branch=master)](https://travis-ci.org/didil/volusnap)
 
+Volusnap allows automated recurring snapshots from cloud provider volumes. Digital Ocean and Scaleway are currently supported.  
 
 *ALPHA: Not ready for production use*
 
-Volusnap includes: 
-- API server/daemon
-- CLI client
+## Contributing 
+Please open PRs to add providers !  
+The architecture is modular, you can look at a provider example [here](pkg/api/digitalocean.go). Don't forget to add tests :)
+
 
 ## Usage
 
@@ -44,21 +46,86 @@ Start the Volusnap server:
 $ ./volusnapd -p 8080
 ```
 
- ### Client
-Signup:
+### API
+The server uses a REST API. All POST requests expect "application/JSON" content-type. Responses are JSON
+
+**Signup user**  
+POST /api/v1/auth/signup/
+Request Body
+```json
+{
+    "email": "myemail@example.com",
+    "password": "mypassword"
+}
 ```
-$ ./volusnapctl signup -e "mike@example.com" -p "123456"
+Response Body
+```json
+{
+  "id": 1
+}
 ```
 
-Login:
+**Login user**  
+POST /api/v1/auth/login/  
+Request Body
+```json
+{
+    "email": "myemail@example.com",
+    "password": "mypassword"
+}
 ```
-$ ./volusnapctl signup -e "mike@example.com" -p "123456"
-Login Successful Token:
-xxJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoyLCJleHAiOjE1ODQ3OTExNjcsImlzcyI6ImFwcCJ9.C0JE7uh9SEL74ve53jKFkSh6fGZ5vIppXGOTymkRpdI 
+Response Body
+```json
+{
+  "token": "xxxxxxx"
+}
 ```
 
-Copy the JWT token to an env variable:
+**Create account**  
+POST /api/v1/auth/account/  
+Headers  
+Authorization: "Bearer [Token From Login]"  
+Request Body
+```json
+{
+	"provider": "scaleway",
+	"name": "scaleway 1", 
+	"token": "xyzxyzxyz" // API Token from the cloud provider
+}
 ```
-$ VOLUTOKEN=[token from previous command]
-```
+Response Body
+```json
+{
+  "id": 2
+}
+``` 
 
+**List accounts**  
+GET /api/v1/auth/account/ 
+Headers  
+Authorization: "Bearer [Token From Login]"  
+Response Body
+```json
+{
+  "accounts": [
+    {
+      "id": 1,
+      "created_at": "2019-02-25T18:38:55.436512+07:00",
+      "updated_at": "2019-02-25T18:38:55.436512+07:00",
+      "name": "do 1",
+      "provider": "digital_ocean",
+      "token": "xxx",
+      "user_id": 1
+    },
+    {
+      "id": 2,
+      "created_at": "2019-02-26T14:35:05.261556+07:00",
+      "updated_at": "2019-02-26T14:35:05.261556+07:00",
+      "name": "scaleway 1",
+      "provider": "scaleway",
+      "token": "xxx",
+      "user_id": 1
+    }
+  ]
+}
+``` 

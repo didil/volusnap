@@ -41,7 +41,7 @@ func Test_handleSignupWithErr(t *testing.T) {
 	defer s.Close()
 
 	var b bytes.Buffer
-	json.NewEncoder(&b).Encode(&SignupReq{Email: email, Password: password})
+	json.NewEncoder(&b).Encode(&signupReq{Email: email, Password: password})
 
 	resp, err := http.Post(s.URL+"/api/v1/auth/signup", "application/JSON", &b)
 	assert.NoError(t, err)
@@ -71,7 +71,7 @@ func Test_handleSignupOk(t *testing.T) {
 	defer s.Close()
 
 	var b bytes.Buffer
-	json.NewEncoder(&b).Encode(&SignupReq{Email: email, Password: password})
+	json.NewEncoder(&b).Encode(&signupReq{Email: email, Password: password})
 
 	resp, err := http.Post(s.URL+"/api/v1/auth/signup", "application/JSON", &b)
 	assert.NoError(t, err)
@@ -79,7 +79,7 @@ func Test_handleSignupOk(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var sResp SignupResp
+	var sResp signupResp
 	err = json.NewDecoder(resp.Body).Decode(&sResp)
 	assert.NoError(t, err)
 
@@ -102,7 +102,7 @@ func Test_handleLoginWithErr(t *testing.T) {
 	defer s.Close()
 
 	var b bytes.Buffer
-	json.NewEncoder(&b).Encode(&LoginReq{Email: email, Password: password})
+	json.NewEncoder(&b).Encode(&loginReq{Email: email, Password: password})
 
 	resp, err := http.Post(s.URL+"/api/v1/auth/login", "application/JSON", &b)
 	assert.NoError(t, err)
@@ -132,7 +132,7 @@ func Test_handleLoginOk(t *testing.T) {
 	defer s.Close()
 
 	var b bytes.Buffer
-	json.NewEncoder(&b).Encode(&LoginReq{Email: email, Password: password})
+	json.NewEncoder(&b).Encode(&loginReq{Email: email, Password: password})
 
 	resp, err := http.Post(s.URL+"/api/v1/auth/login", "application/JSON", &b)
 	assert.NoError(t, err)
@@ -140,7 +140,7 @@ func Test_handleLoginOk(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var lResp LoginResp
+	var lResp loginResp
 	err = json.NewDecoder(resp.Body).Decode(&lResp)
 	assert.NoError(t, err)
 

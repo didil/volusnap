@@ -14,19 +14,19 @@ type authController struct {
 	authSvc authSvcer
 }
 
-// SignupReq signup request format
-type SignupReq struct {
+// signupReq signup request format
+type signupReq struct {
 	Email    string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 }
 
-// SignupResp signup response format
-type SignupResp struct {
+// signupResp signup response format
+type signupResp struct {
 	ID int `json:"id,omitempty"`
 }
 
 func (ctrl *authController) handleSignup(w http.ResponseWriter, r *http.Request) {
-	signup := &SignupReq{}
+	signup := &signupReq{}
 
 	err := json.NewDecoder(r.Body).Decode(signup)
 	if err != nil {
@@ -40,22 +40,22 @@ func (ctrl *authController) handleSignup(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	jsonOK(w, &SignupResp{ID: id})
+	jsonOK(w, &signupResp{ID: id})
 }
 
-// LoginReq login request json
-type LoginReq struct {
+// loginReq login request json
+type loginReq struct {
 	Email    string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 }
 
-// LoginResp login response json
-type LoginResp struct {
+// loginResp login response json
+type loginResp struct {
 	Token string `json:"token,omitempty"`
 }
 
 func (ctrl *authController) handleLogin(w http.ResponseWriter, r *http.Request) {
-	login := &LoginReq{}
+	login := &loginReq{}
 
 	err := json.NewDecoder(r.Body).Decode(login)
 	if err != nil {
@@ -69,5 +69,5 @@ func (ctrl *authController) handleLogin(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	jsonOK(w, &LoginResp{Token: token})
+	jsonOK(w, &loginResp{Token: token})
 }

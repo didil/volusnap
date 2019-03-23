@@ -16,7 +16,6 @@ test-ci:
 	go test -race -coverprofile=coverage.txt -covermode=atomic ./pkg/...
 build:
 	go build -o volusnapd cmd/volusnapd/* 
-	go build -o volusnapctl cmd/volusnapctl/*
 sqlboiler:
 	sqlboiler psql --wipe
 
