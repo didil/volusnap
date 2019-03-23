@@ -16,7 +16,7 @@ type accountController struct {
 	accountSvc accountSvcer
 }
 
-type listAccountsResp struct {
+type ListAccountsResp struct {
 	Accounts models.AccountSlice `json:"accounts"`
 }
 
@@ -28,23 +28,23 @@ func (ctrl *accountController) handleListAccounts(w http.ResponseWriter, r *http
 		return
 	}
 
-	jsonOK(w, &listAccountsResp{Accounts: accounts})
+	jsonOK(w, &ListAccountsResp{Accounts: accounts})
 }
 
-type createAccountReq struct {
+type CreateAccountReq struct {
 	Provider string `json:"provider,omitempty"`
 	Name     string `json:"name,omitempty"`
 	Token    string `json:"token,omitempty"`
 }
 
-type createAccountResp struct {
+type CreateAccountResp struct {
 	ID int `json:"id,omitempty"`
 }
 
 func (ctrl *accountController) handleCreateAccount(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(ctxKey("userID")).(int)
 
-	create := &createAccountReq{}
+	create := &CreateAccountReq{}
 
 	err := json.NewDecoder(r.Body).Decode(create)
 	if err != nil {
@@ -58,5 +58,5 @@ func (ctrl *accountController) handleCreateAccount(w http.ResponseWriter, r *htt
 		return
 	}
 
-	jsonOK(w, &createAccountResp{ID: accountID})
+	jsonOK(w, &CreateAccountResp{ID: accountID})
 }

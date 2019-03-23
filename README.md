@@ -53,7 +53,7 @@ $ ./volusnapctl signup -e "mike@example.com" -p "123456"
 Login:
 ```
 $ ./volusnapctl signup -e "mike@example.com" -p "123456"
-INFO[0000] Login Successful Token:
+Login Successful Token:
 xxJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoyLCJleHAiOjE1ODQ3OTExNjcsImlzcyI6ImFwcCJ9.C0JE7uh9SEL74ve53jKFkSh6fGZ5vIppXGOTymkRpdI 
 ```
 

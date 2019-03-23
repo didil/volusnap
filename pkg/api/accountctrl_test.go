@@ -87,7 +87,7 @@ func Test_handleListAccountsOK(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var listResp listAccountsResp
+	var listResp ListAccountsResp
 	err = json.NewDecoder(resp.Body).Decode(&listResp)
 	assert.NoError(t, err)
 
@@ -113,7 +113,7 @@ func Test_handleCreateAccountOK(t *testing.T) {
 	defer s.Close()
 
 	var b bytes.Buffer
-	json.NewEncoder(&b).Encode(&createAccountReq{Provider: "my-provider", Name: "account-name", Token: "my-token"})
+	json.NewEncoder(&b).Encode(&CreateAccountReq{Provider: "my-provider", Name: "account-name", Token: "my-token"})
 
 	req, err := http.NewRequest(http.MethodPost, s.URL+"/api/v1/account/", &b)
 	assert.NoError(t, err)
@@ -125,7 +125,7 @@ func Test_handleCreateAccountOK(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, resp.Header.Get("Content-Type"), "application/JSON")
 
-	var createResp createAccountResp
+	var createResp CreateAccountResp
 	err = json.NewDecoder(resp.Body).Decode(&createResp)
 	assert.NoError(t, err)
 

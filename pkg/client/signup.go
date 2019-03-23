@@ -37,5 +37,5 @@ func (c *Client) Signup(email string, password string) (string, error) {
 		return "", fmt.Errorf("json error: %v", err)
 	}
 
-	return fmt.Sprintf("Signup Successful ID: %v", sResp.ID), nil
+	return fmt.Sprintf("Signup Successful ID: %v\n", sResp.ID), nil
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/didil/volusnap/pkg/api"
 )
 
-// Login a new user
+// Login a user
 func (c *Client) Login(email string, password string) (string, error) {
 	var b bytes.Buffer
 	json.NewEncoder(&b).Encode(&api.LoginReq{Email: email, Password: password})
@@ -37,5 +37,5 @@ func (c *Client) Login(email string, password string) (string, error) {
 		return "", fmt.Errorf("json error: %v", err)
 	}
 
-	return fmt.Sprintf("Login Successful Token:\n%v", lResp.Token), nil
+	return fmt.Sprintf("Login Successful Token:\n%v\n", lResp.Token), nil
 }
