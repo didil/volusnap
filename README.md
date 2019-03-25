@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/didil/volusnap.svg?branch=master)](https://travis-ci.org/didil/volusnap)
 
-Volusnap allows automated recurring snapshots from cloud provider volumes. Digital Ocean and Scaleway are currently supported.  
+Volusnap allows trigerring automated recurring snapshots of cloud provider volumes. Digital Ocean and Scaleway APIs are currently supported.  
 
 *ALPHA: Not ready for production use*
 
