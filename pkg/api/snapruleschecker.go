@@ -14,6 +14,7 @@ type snapRulesChecker struct {
 	accountSvc  accountSvcer
 	shooter     snapshooter
 	ticker      *time.Ticker
+	stop        chan bool
 }
 
 func newSnapRulesChecker(snapRuleSvc snapRuleSvcer, snapshotSvc snapshotSvcer, accountSvc accountSvcer, shooter snapshooter) *snapRulesChecker {
@@ -22,6 +23,7 @@ func newSnapRulesChecker(snapRuleSvc snapRuleSvcer, snapshotSvc snapshotSvcer, a
 		snapshotSvc: snapshotSvc,
 		accountSvc:  accountSvc,
 		shooter:     shooter,
+		stop:        make(chan bool, 1),
 	}
 }
 
@@ -29,11 +31,16 @@ func (checker *snapRulesChecker) Start() {
 	logrus.Infof("Starting snapRulesChecker ...")
 	checker.ticker = time.NewTicker(5 * time.Minute)
 	go func() {
-		for range checker.ticker.C {
-			logrus.Infof("Checking SnapRules ...")
-			err := checker.checkAll()
-			if err != nil {
-				logrus.Errorf("checkall snaprules err: %v", err)
+		for {
+			select {
+			case <-checker.ticker.C:
+				logrus.Infof("Checking SnapRules ...")
+				err := checker.checkAll()
+				if err != nil {
+					logrus.Errorf("checkall snaprules err: %v", err)
+				}
+			case <-checker.stop:
+				return
 			}
 		}
 	}()
@@ -42,6 +49,7 @@ func (checker *snapRulesChecker) Start() {
 func (checker *snapRulesChecker) Stop() {
 	logrus.Infof("Stopping snapRulesChecker ...")
 	checker.ticker.Stop()
+	close(checker.stop)
 }
 
 func (checker *snapRulesChecker) checkAll() error {
