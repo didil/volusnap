@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/didil/volusnap.svg?branch=master)](https://travis-ci.org/didil/volusnap)
 
-Volusnap allows triggering automated recurring snapshots of cloud provider volumes. Digital Ocean and Scaleway APIs are currently supported.  
+Volusnap is an API Server built with Go. It allows triggering automated recurring snapshots of cloud provider volumes. Digital Ocean and Scaleway APIs are currently supported.  
 
 *ALPHA: Not ready for production use*
 
