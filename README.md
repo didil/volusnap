@@ -1,4 +1,4 @@
-# VoluSnap - Cloud Volume Auto Snapshot Server
+# VoluSnap - Cloud Volume auto-snapshot Go Server
 
 [![Build Status](https://travis-ci.org/didil/volusnap.svg?branch=master)](https://travis-ci.org/didil/volusnap)
 
