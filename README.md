@@ -8,7 +8,7 @@ Volusnap is an API Server built with Go. It allows triggering automated recurrin
 
 ## Contributing 
 Please open PRs to add providers !  
-The architecture is modular, you can look at a provider example [here](pkg/api/digitalocean.go). Don't forget to add tests :)
+You can see a provider example [here](pkg/api/digitalocean.go). Don't forget to add tests :)
 
 
 ## Usage
