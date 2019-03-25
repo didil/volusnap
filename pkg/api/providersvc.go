@@ -8,7 +8,7 @@ import (
 
 // ProviderSvcer is the interface Provider Services must implement
 type ProviderSvcer interface {
-	ListVolumes() ([]volume, error)
+	ListVolumes() ([]Volume, error)
 	TakeSnapshot(snapRule *models.SnapRule) (string, error)
 }
 

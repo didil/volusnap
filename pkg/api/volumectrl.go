@@ -17,7 +17,7 @@ type volumeController struct {
 }
 
 type listVolumesResp struct {
-	Volumes []volume `json:"volumes"`
+	Volumes []Volume `json:"volumes"`
 }
 
 func (ctrl *volumeController) handleListVolumes(w http.ResponseWriter, r *http.Request) {

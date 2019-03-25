@@ -15,9 +15,9 @@ func Test_digitalOceanService_ListVolumes(t *testing.T) {
 	factory := newDigitalOceanServiceFactory()
 	doSvc := factory.Build(token).(*digitalOceanService)
 
-	volumes := []volume{
-		volume{ID: "3164444", Name: "example.com", Size: 25, Region: "nyc3"},
-		volume{ID: "95874511", Name: "my-other-droplet", Size: 50, Region: "nyc1"},
+	volumes := []Volume{
+		Volume{ID: "3164444", Name: "example.com", Size: 25, Region: "nyc3"},
+		Volume{ID: "95874511", Name: "my-other-droplet", Size: 50, Region: "nyc1"},
 	}
 
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

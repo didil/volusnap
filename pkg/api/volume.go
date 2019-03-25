@@ -1,6 +1,6 @@
 package api
 
-type volume struct {
+type Volume struct {
 	ID   string
 	Name string
 	// size in gigabytes
