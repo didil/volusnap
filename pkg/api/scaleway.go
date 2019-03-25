@@ -24,7 +24,7 @@ func newScalewayServiceFactory() *scalewayServiceFactory {
 
 type scalewayServiceFactory struct{}
 
-func (factory *scalewayServiceFactory) Build(token string) providerSvcer {
+func (factory *scalewayServiceFactory) Build(token string) ProviderSvcer {
 	return &scalewayService{
 		token: token,
 		rootURLs: map[string]string{

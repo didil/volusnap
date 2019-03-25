@@ -5,7 +5,7 @@ import "sync"
 var pRegistry = newProviderRegistry()
 
 type providerServiceFactory interface {
-	Build(token string) providerSvcer
+	Build(token string) ProviderSvcer
 }
 
 func newProviderRegistry() *providerRegistry {

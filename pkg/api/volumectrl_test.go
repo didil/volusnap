@@ -31,9 +31,9 @@ type mockProviderServiceFactory struct {
 	mock.Mock
 }
 
-func (m *mockProviderServiceFactory) Build(token string) providerSvcer {
+func (m *mockProviderServiceFactory) Build(token string) ProviderSvcer {
 	args := m.Called(token)
-	return args.Get(0).(providerSvcer)
+	return args.Get(0).(ProviderSvcer)
 }
 
 func Test_handleListVolumesOK(t *testing.T) {

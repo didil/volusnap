@@ -6,12 +6,13 @@ import (
 	"github.com/didil/volusnap/pkg/models"
 )
 
-type providerSvcer interface {
+// ProviderSvcer is the interface Provider Services must implement
+type ProviderSvcer interface {
 	ListVolumes() ([]volume, error)
 	TakeSnapshot(snapRule *models.SnapRule) (string, error)
 }
 
-func getProviderService(account *models.Account) (providerSvcer, error) {
+func getProviderService(account *models.Account) (ProviderSvcer, error) {
 	factory := pRegistry.getProviderServiceFactory(account.Provider)
 	if factory == nil {
 		return nil, fmt.Errorf("could not get provider factory for %v", account.Provider)

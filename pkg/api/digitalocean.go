@@ -23,7 +23,7 @@ func newDigitalOceanServiceFactory() *digitalOceanServiceFactory {
 
 type digitalOceanServiceFactory struct{}
 
-func (factory *digitalOceanServiceFactory) Build(token string) providerSvcer {
+func (factory *digitalOceanServiceFactory) Build(token string) ProviderSvcer {
 	return &digitalOceanService{token: token, rootURL: "https://api.digitalocean.com/v2"}
 }
 
