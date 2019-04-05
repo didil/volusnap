@@ -16,4 +16,4 @@ coverage.txt
 profile_cpu.pdf
 
 # binaries
-volusnapd
+/volusnapd
